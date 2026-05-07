@@ -1,7 +1,7 @@
 # spec/HTTP/put_spec.rb
 
 require_relative '../spec_helper'
-require 'HTTP/put'
+require 'http'
 
 describe ".put" do
   context "with uri-only supplied" do

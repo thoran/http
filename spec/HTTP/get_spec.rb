@@ -1,7 +1,7 @@
 # spec/HTTP/get_spec.rb
 
 require_relative '../spec_helper'
-require 'HTTP/get'
+require 'http'
 
 describe ".get" do
   context "with uri-only supplied" do

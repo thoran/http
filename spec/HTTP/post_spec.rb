@@ -1,7 +1,7 @@
 # spec/HTTP/post_spec.rb
 
 require_relative '../spec_helper'
-require 'HTTP/post'
+require 'http'
 
 describe ".post" do
   context "with uri-only supplied" do

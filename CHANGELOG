@@ -1,3 +1,31 @@
+# 20260507
+# 0.18.0: Add all missing HTTP verbs; use meta-programming to define verb methods.
+1. + HTTP/verbs.rb; including:
+     + HTTP::VERBS::WITHOUT_BODY: get, delete, head, options, trace
+     + HTTP::VERBS::WITH_BODY: post, put, patch, propfind, proppatch, mkcol, copy, move, lock, unlock, report
+2. + lib/Net/HTTP/Report.rb: Add Net::HTTP::Report, which is missing from Ruby's standard library. See RFC 3253.
+3. - lib/HTTP/delete.rb
+4. - lib/HTTP/get.rb
+5. - lib/HTTP/post.rb
+6. - lib/HTTP/put.rb
+7. + String/to_const.rb
+8. + Thoran/Array/AllButFirst/all_but_first.rb
+9. + Thoran/Array/FirstX/firstX.rb
+10. + Thoran/String/ToConst/to_const.rb
+11. + LICENSE
+12. + Rakefile
+13. + spec/HTTP/head_spec.rb
+14. + spec/HTTP/propfind_spec.rb
+15. + spec/Net/HTTP/Report_spec.rb
+16. ~ HTTP::VERSION: /0.17.0/0.18.0/
+17. /CHANGELOG.txt/CHANGELOG/
+18. /TODO.txt/TODO/
+19. ~ CHANGELOG: + 0.18.0 entry
+20. ~ http.rb.gemspec: /s/spec/; - date; + Rakefile; + development_dependencies
+21. ~ Gemfile: /group :test/gemspec/
+22. ~ .gitignore: Using a common one with lots of entries.
+23. ~ README.md: /http.rb/http/; Trimmed the Description; Usage has more code blocks, making the comments Markdown sub-sections.
+
 # 20260325
 # 0.17.0: Extract HTTP.request method; consolidate set_headers.
 1. + HTTP.request: Extract common plumbing (connection, SSL, auth, redirect, response) from verb methods.

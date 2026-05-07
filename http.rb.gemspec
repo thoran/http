@@ -1,26 +1,43 @@
 require_relative './lib/HTTP/VERSION'
 
-Gem::Specification.new do |s|
-  s.name = 'http.rb'
-  s.version = HTTP::VERSION
-  s.date = '2026-03-25'
+class Gem::Specification
+  def development_dependencies=(gems)
+    gems.each{|gem| add_development_dependency(*gem)}
+  end
+end
 
-  s.summary = "HTTP made easy."
-  s.description = "HTTP is the simplest HTTP mezzanine library for Ruby.  Supply a URI, \
+Gem::Specification.new do |spec|
+  spec.name = 'http.rb'
+  spec.version = HTTP::VERSION
+
+  spec.summary = "HTTP made easy."
+  spec.description = "HTTP is the simplest HTTP mezzanine library for Ruby.  Supply a URI, \
     some optional query arguments, some optional headers, and some \
     Net::HTTP options, and that's it!"
-  s.author = 'thoran'
-  s.email = 'code@thoran.com'
-  s.homepage = "http://github.com/thoran/HTTP"
 
-  s.files = [
-    'CHANGELOG.txt',
-    'Gemfile',
-    'README.md',
+  spec.author = 'thoran'
+  spec.email = 'code@thoran.com'
+  spec.homepage = "http://github.com/thoran/HTTP"
+  spec.license = 'MIT'
+
+  spec.required_ruby_version = '>= 2.7'
+  spec.require_paths = ['lib']
+
+  spec.files = [
     'http.rb.gemspec',
+    'CHANGELOG',
+    'Gemfile',
+    'LICENSE',
+    'Rakefile',
+    'README.md',
     Dir['lib/**/*.rb'],
-    Dir['spec/**/*.rb']
+    Dir['spec/**/*.rb'],
   ].flatten
 
-  s.require_paths = ['lib']
+  spec.development_dependencies = %w{
+    pry
+    rake
+    rspec
+    webmock
+  }
 end

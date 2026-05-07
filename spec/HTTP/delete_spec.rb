@@ -1,7 +1,7 @@
 # spec/HTTP/delete_spec.rb
 
 require_relative '../spec_helper'
-require 'HTTP/delete'
+require 'http'
 
 describe ".delete" do
   context "with uri-only supplied" do
