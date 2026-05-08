@@ -5,14 +5,13 @@ require 'json'
 require 'net/http'
 
 require_relative '../Hash/x_www_form_urlencode'
-require_relative '../Net/HTTP/Report'
 require_relative './request'
 require_relative '../String/to_const'
 
 module HTTP
   module VERBS
     WITHOUT_BODY = %i{get delete head options trace}
-    WITH_BODY = %i{post put patch propfind proppatch mkcol copy move lock unlock report}
+    WITH_BODY = %i{post put patch}
   end
 
   VERBS::WITHOUT_BODY.each do |verb|

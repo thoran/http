@@ -1,3 +1,15 @@
+# CHANGELOG
+
+# 20260508
+# 0.18.1: Remove incorrectly added WebDAV verbs.
+1. - lib/Net/HTTP/Report.rb
+2. ~ HTTP::VERBS: - require_relative '../Net/HTTP/Report'
+3. ~ HTTP::VERBS::WITH_BODY: - propfind, proppatch, mkcol, copy, move, lock, unlock, report
+4. - spec/HTTP/propfind_spec.rb
+5. - spec/Net/HTTP/Report_spec.rb
+6. ~ HTTP::VERSION: /0.18.0/0.18.1/
+7. ~ CHANGELOG: + 0.18.1 entry
+
 # 20260507
 # 0.18.0: Add all missing HTTP verbs; use meta-programming to define verb methods.
 1. + HTTP/verbs.rb; including:

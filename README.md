@@ -1,7 +1,5 @@
 # http
 
-## Description
-
 For many years this was a personal library, from around the middle of 2009 from what I can ascertain, though in various guises it may have been as early as late 2007.
 
 Like many others before and after me with their respective libraries, I created it to simplify the heinous interface that is Net::HTTP. At the time of it's original creation I was doing a lot of a webscraping and didn't want a half-dozen line setup to make simple requests. It has stood the test of time, for me personally insofar as the interface remaining simpler than most other similar libraries, though it is also less full featured, but nevertheless for it's tiny size it packs in quite a bit.
@@ -247,7 +245,7 @@ verify_mode
 
 ## Contributing
 
-1. Fork it ( https://github.com/thoran/http/fork )
+1. Fork it [https://github.com/thoran/http/fork](https://github.com/thoran/http/fork)
 2. Create your feature branch (`git checkout -b my-new-feature`)
 3. Commit your changes (`git commit -am 'Add some feature'`)
 4. Push to the branch (`git push origin my-new-feature`)
