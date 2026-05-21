@@ -1,5 +1,15 @@
 # CHANGELOG
 
+# 20260521
+# 0.18.3: Fix verb preservation on 307/308 redirects.
+1. ~ HTTP.request: Use original verb when following 307 or 308 redirects, per RFC 7231 §6.4.7 and RFC 7538. 301/302/303 keep legacy GET-on-redirect behaviour.
+2. ~ spec/HTTP/post_spec.rb: + specs for 307/308 verb preservation and 307 body preservation.
+3. ~ spec/HTTP/put_spec.rb: + spec for 307 verb preservation.
+4. ~ spec/HTTP/delete_spec.rb: + spec for 307 verb preservation.
+5. ~ spec/spec_helper.rb: Skip webmock's http_rb adapter, which collides with this gem's HTTP module on case-insensitive filesystems.
+6. ~ HTTP::VERSION: /0.18.2/0.18.3/
+7. ~ CHANGELOG: + 0.18.3 entry
+
 # 20260520
 # 0.18.2: Fix relative redirect URL construction.
 1. ~ HTTP.request: Use URI#merge for redirect URL construction. Preserves original scheme, elides default ports, and resolves relative paths per RFC 3986.

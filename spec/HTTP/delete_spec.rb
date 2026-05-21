@@ -212,6 +212,27 @@ describe ".delete" do
     end
   end
 
+  context "with verb-preserving redirection via 307" do
+    let(:request_uri){'http://example.com/path'}
+    let(:redirect_uri){'http://redirected.com'}
+
+    before do
+      stub_request(:delete, request_uri).
+        with(headers: {'Accept'=>'*/*', 'Accept-Encoding'=>'gzip;q=1.0,deflate;q=0.6,identity;q=0.3', 'User-Agent'=>'Ruby'}).
+          to_return(status: 307, body: '', headers: {'location' => redirect_uri})
+      stub_request(:delete, redirect_uri).
+        with(headers: {'Accept'=>'*/*', 'Accept-Encoding'=>'gzip;q=1.0,deflate;q=0.6,identity;q=0.3', 'User-Agent'=>'Ruby'}).
+          to_return(status: 200, body: '', headers: {})
+    end
+
+    it "preserves the verb" do
+      expect(HTTP).to receive(:delete).with(request_uri).and_call_original.ordered
+      expect(HTTP).to receive(:delete).with(redirect_uri, {}, {}, {use_ssl: false, verify_mode: 0}).and_call_original.ordered
+      response = HTTP.delete(request_uri)
+      expect(response.success?).to eq(true)
+    end
+  end
+
   context "no_redirect true" do
     let(:request_uri){'http://example.com/path'}
     let(:redirect_uri){'http://redirected.com'}

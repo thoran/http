@@ -28,7 +28,13 @@ module HTTP
         return response
       end
       redirect_uri = uri.merge(response.header['location'])
-      response = get(redirect_uri.to_s, {}, {}, options, &block)
+      if response.code =~ /^30[78]$/
+        verb = request_object.method.downcase.to_sym
+        data = VERBS::WITH_BODY.include?(verb) ? request_object.body : {}
+        response = send(verb, redirect_uri.to_s, data, headers, options, &block)
+      else
+        response = get(redirect_uri.to_s, {}, {}, options, &block)
+      end
     end
     if block_given?
       yield response
