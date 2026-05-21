@@ -173,7 +173,7 @@ describe ".get" do
   context "with path only redirection" do
     let(:request_uri){'http://example.com/path'}
     let(:redirect_path){'/new_path'}
-    let(:redirect_uri){"http://example.com:80#{redirect_path}"}
+    let(:redirect_uri){"http://example.com#{redirect_path}"}
 
     before do
       stub_request(:get, redirect_uri).
@@ -209,6 +209,28 @@ describe ".get" do
         response = HTTP.get(request_uri)
         expect(response.success?).to eq(true)
       end
+    end
+  end
+
+  context "with path only redirection from HTTPS" do
+    let(:request_uri){'https://example.com/path'}
+    let(:redirect_path){'/new_path'}
+    let(:redirect_uri){"https://example.com#{redirect_path}"}
+
+    before do
+      stub_request(:get, redirect_uri).
+        with(headers: {'Accept'=>'*/*', 'Accept-Encoding'=>'gzip;q=1.0,deflate;q=0.6,identity;q=0.3', 'User-Agent'=>'Ruby'}).
+          to_return(status: 200, body: '', headers: {})
+      stub_request(:get, request_uri).
+        with(headers: {'Accept'=>'*/*', 'Accept-Encoding'=>'gzip;q=1.0,deflate;q=0.6,identity;q=0.3', 'User-Agent'=>'Ruby'}).
+          to_return(status: 301, body: '', headers: {'location' => redirect_path})
+    end
+
+    it "preserves the HTTPS scheme on a relative redirect" do
+      expect(HTTP).to receive(:get).once.with(request_uri).and_call_original
+      expect(HTTP).to receive(:get).once.with(redirect_uri, {}, {}, {use_ssl: true, verify_mode: 0}).and_call_original
+      response = HTTP.get(request_uri)
+      expect(response.success?).to eq(true)
     end
   end
 

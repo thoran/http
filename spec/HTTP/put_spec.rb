@@ -311,7 +311,7 @@ describe ".put" do
   context "with path only redirection" do
     let(:request_uri){'http://example.com/path'}
     let(:redirect_path){'/new_path'}
-    let(:redirect_uri){"http://example.com:80#{redirect_path}"}
+    let(:redirect_uri){"http://example.com#{redirect_path}"}
 
     before do
       stub_request(:get, redirect_uri).

@@ -1,5 +1,15 @@
 # CHANGELOG
 
+# 20260520
+# 0.18.2: Fix relative redirect URL construction.
+1. ~ HTTP.request: Use URI#merge for redirect URL construction. Preserves original scheme, elides default ports, and resolves relative paths per RFC 3986.
+2. ~ spec/HTTP/get_spec.rb: Update relative-redirect stubs to elide default port; + context for HTTPS relative redirect.
+3. ~ spec/HTTP/post_spec.rb: Update relative-redirect stubs to elide default port.
+4. ~ spec/HTTP/put_spec.rb: Update relative-redirect stubs to elide default port.
+5. ~ spec/HTTP/delete_spec.rb: Update relative-redirect stubs to elide default port.
+6. ~ HTTP::VERSION: /0.18.1/0.18.2/
+7. ~ CHANGELOG: + 0.18.2 entry
+
 # 20260508
 # 0.18.1: Remove incorrectly added WebDAV verbs.
 1. - lib/Net/HTTP/Report.rb

@@ -27,13 +27,8 @@ module HTTP
       elsif no_redirect
         return response
       end
-      redirect_uri = URI.parse(response.header['location'])
-      if redirect_uri.scheme
-        response = get(response.header['location'], {}, {}, options, &block)
-      else
-        new_location = "http://#{uri.host}:#{uri.port}#{response.header['location']}"
-        response = get(new_location, {}, {}, options, &block)
-      end
+      redirect_uri = uri.merge(response.header['location'])
+      response = get(redirect_uri.to_s, {}, {}, options, &block)
     end
     if block_given?
       yield response
