@@ -269,6 +269,69 @@ describe ".get" do
     end
   end
 
+  describe "with cross-scheme redirection" do
+    def capture_http_objects
+      http_objects = []
+      original_new = Net::HTTP.method(:new)
+      Net::HTTP.stub(:new, ->(*args){
+        http_object = original_new.call(*args)
+        http_objects << http_object
+        http_object
+      }) do
+        yield
+      end
+      http_objects
+    end
+
+    describe "from HTTPS to HTTP" do
+      let(:request_uri){'https://example.com/path'}
+      let(:redirect_uri){'http://redirected.com'}
+
+      before do
+        stub_request(:get, request_uri).
+          to_return(status: 301, body: '', headers: {'location' => redirect_uri})
+        stub_request(:get, redirect_uri).
+          to_return(status: 200, body: '', headers: {})
+      end
+
+      it "follows the redirect without carrying use_ssl over to the HTTP host" do
+        http_objects = capture_http_objects do
+          response = HTTP.get(request_uri)
+          _(response.success?).must_equal(true)
+        end
+        _(http_objects.size).must_equal(2)
+        _(http_objects[0].use_ssl?).must_equal(true)
+        _(http_objects[1].use_ssl?).must_equal(false)
+        assert_requested(:get, request_uri)
+        assert_requested(:get, redirect_uri)
+      end
+    end
+
+    describe "from HTTP to HTTPS" do
+      let(:request_uri){'http://example.com/path'}
+      let(:redirect_uri){'https://redirected.com'}
+
+      before do
+        stub_request(:get, request_uri).
+          to_return(status: 301, body: '', headers: {'location' => redirect_uri})
+        stub_request(:get, redirect_uri).
+          to_return(status: 200, body: '', headers: {})
+      end
+
+      it "enables use_ssl on the redirected HTTPS request" do
+        http_objects = capture_http_objects do
+          response = HTTP.get(request_uri)
+          _(response.success?).must_equal(true)
+        end
+        _(http_objects.size).must_equal(2)
+        _(http_objects[0].use_ssl?).must_equal(false)
+        _(http_objects[1].use_ssl?).must_equal(true)
+        assert_requested(:get, request_uri)
+        assert_requested(:get, redirect_uri)
+      end
+    end
+  end
+
   describe "no_redirect true" do
     let(:request_uri){'http://example.com/path'}
     let(:redirect_uri){'http://redirected.com'}

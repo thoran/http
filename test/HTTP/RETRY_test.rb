@@ -267,6 +267,20 @@ describe HTTP, ".retry_after" do
     response = MockResponse.new(headers_hash: {'Retry-After' => 'not a date'})
     _(HTTP.retry_after(response)).must_be_nil
   end
+
+  it "clamps to 0 when the Retry-After HTTP-date is in the past" do
+    base = Time.utc(2026, 5, 22, 12, 0, 0)
+    retry_at_header = (base - 60).httpdate
+    response = MockResponse.new(headers_hash: {'Retry-After' => retry_at_header})
+    Time.stub(:now, base) do
+      _(HTTP.retry_after(response)).must_equal(0)
+    end
+  end
+
+  it "returns nil for a negative integer Retry-After" do
+    response = MockResponse.new(headers_hash: {'Retry-After' => '-5'})
+    _(HTTP.retry_after(response)).must_be_nil
+  end
 end
 
 describe HTTP, ".backoff_delay" do

@@ -17,9 +17,10 @@ module HTTP
     http = Net::HTTP.new(uri.host, uri.port)
     no_redirect = options.delete(:no_redirect)
     config = retry_config(options)
-    options[:use_ssl] ||= uri.use_ssl?
-    options[:verify_mode] ||= OpenSSL::SSL::VERIFY_PEER
-    http.options = options
+    http.options = options.merge(
+      use_ssl: (options[:use_ssl] || uri.use_ssl?),
+      verify_mode: (options[:verify_mode] || OpenSSL::SSL::VERIFY_PEER)
+    )
     request_object.headers = headers
     request_object.basic_auth(uri.user, uri.password) if uri.user
     verb = request_object.method.downcase.to_sym

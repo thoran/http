@@ -2,6 +2,17 @@
 
 ## 20260522
 
+0.23.0: Fix cross-scheme redirect SSL leak; clamp negative Retry-After.
+
+1. ~ HTTP.request: Compute http-object SSL configuration via options.merge instead of mutating the caller's options hash with auto-derived use_ssl and verify_mode. The previous ||= writes meant an HTTPS→HTTP redirect carried use_ssl: true through to the recursive call against the HTTP host, attempting an SSL handshake on the plain-HTTP port. Cross-scheme redirects in both directions now re-derive use_ssl from each URI.
+2. ~ HTTP.retry_after: Clamp the HTTP-date branch via delta && [delta, 0].max. A past Retry-After HTTP-date previously returned a negative delta; Kernel.sleep raises ArgumentError on negatives.
+3. ~ test/HTTP/get_test.rb: + cross-scheme redirection specs (HTTPS→HTTP and HTTP→HTTPS) using a Net::HTTP.new stub to capture each Net::HTTP instance and assert use_ssl? per hop.
+4. ~ test/HTTP/RETRY_test.rb: + specs for past-date Retry-After (clamps to 0) and negative-integer Retry-After (returns nil).
+5. ~ HTTP::VERSION: /0.22.0/0.23.0/
+6. ~ CHANGELOG: + 0.23.0 entry; fix 0.13.2 date typo (202503030 → 20250330).
+
+## 20260522
+
 0.22.0: Convert specs from RSpec to Minitest.
 
 1. ~ spec/ → test/: All spec files moved to test/ and rewritten in Minitest spec style with `let`, double-quoted descriptions, and `_(...).must_*` expectations. On the TODO since at least 0.17.0; completed before 1.0 to ship into stability on the test framework that's here to stay.
@@ -206,7 +217,7 @@
 2. ~ HTTP::VERSION: /0.13.2/0.13.3/
 3. ~ http.rb.gemspec: Change date.
 
-## 202503030
+## 20250330
 
 0.13.2: Change repo name to match gem name (/HTTP/http.rb/); + Use HTTP::VERSION; /require/require_relative/
 

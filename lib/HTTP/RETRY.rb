@@ -69,7 +69,8 @@ module HTTP
       header.to_i
     else
       # Malformed HTTP-date — fall through to caller's backoff.
-      Time.httpdate(header) - Time.now rescue nil
+      delta = Time.httpdate(header) - Time.now rescue nil
+      delta && [delta, 0].max
     end
   end
   module_function :retry_after
