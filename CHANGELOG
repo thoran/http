@@ -1,5 +1,13 @@
 # CHANGELOG
 
+# 20260521
+# 0.21.0: Add specs for options, trace, and patch verbs.
+1. + spec/HTTP/options_spec.rb: Specs for HTTP.options. These were owed since 0.18.0 when the verb was added via the metaprogramming refactor.
+2. + spec/HTTP/trace_spec.rb: Specs for HTTP.trace. Owed since 0.18.0.
+3. + spec/HTTP/patch_spec.rb: Specs for HTTP.patch. Owed since 0.18.0.
+4. ~ HTTP::VERSION: /0.20.0/0.21.0/
+5. ~ CHANGELOG: + 0.21.0 entry
+
 # 20260522
 # 0.20.0: Add opt-in retry logic with exponential backoff.
 1. + lib/HTTP/RETRY.rb: Retry helpers (with_retries, backoff_delay, retry_after) and constants (HTTP::RETRY::EXCEPTIONS, STATUS_CODES, VERBS).
