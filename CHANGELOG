@@ -2,6 +2,16 @@
 
 ## 20260522
 
+0.24.0: ok? predicate now means 200 specifically.
+
+1. ~ Net::HTTPResponse::StatusPredicates: ok? is now defined as @code == '200' rather than aliased to successful?. The alias semantics (any 2xx) misled — "OK" is the reason-phrase for 200 specifically, not the 2xx class. Migration: callers wanting any-2xx should use successful? (or its alias success?).
+2. + test/Net/HTTPResponse/StatusPredicates_test.rb: Specs for ok? against 200, other 2xx codes, and a 4xx code.
+3. ~ README.md: Status-predicate section rewritten — single coherent reference for the predicate set, with ok? listed as 200-specific.
+4. ~ HTTP::VERSION: /0.23.0/0.24.0/
+5. ~ CHANGELOG: + 0.24.0 entry
+
+## 20260522
+
 0.23.0: Fix cross-scheme redirect SSL leak; clamp negative Retry-After.
 
 1. ~ HTTP.request: Compute http-object SSL configuration via options.merge instead of mutating the caller's options hash with auto-derived use_ssl and verify_mode. The previous ||= writes meant an HTTPS→HTTP redirect carried use_ssl: true through to the recursive call against the HTTP host, attempting an SSL handshake on the plain-HTTP port. Cross-scheme redirects in both directions now re-derive use_ssl from each URI.

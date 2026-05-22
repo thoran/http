@@ -114,48 +114,35 @@ options = {
 
 ### Response status predicate methods
 
+Every response carries predicates for each status class:
+
 ```ruby
-# 1xx
-response = HTTP.get('http://example.com')
-response.informational?
-# => true
+response.informational?   # 1xx
+response.successful?      # 2xx (aliased as success?)
+response.redirection?     # 3xx
+response.client_error?    # 4xx
+response.server_error?    # 5xx
+response.error?           # 4xx or 5xx
+response.ok?              # 200 specifically
+```
 
-# 2xx
-response = HTTP.get('http://example.com')
-response.success?
-# => true
+Redirects are followed by default, so a 3xx is only surfaced when `no_redirect` is set:
 
-# 3xx
-response = HTTP.get('http://example.com', {}, {}, {no_redirect: true})
+```ruby
+response = HTTP.get('http://example.com/moved', {}, {}, {no_redirect: true})
 response.redirection?
 # => true
-response.success?
+response.successful?
 # => false
+```
 
-response = HTTP.get('http://example.com', {}, {}, {no_redirect: false})
+Without `no_redirect`, the redirect is followed and `response` is the final destination:
+
+```ruby
+response = HTTP.get('http://example.com/moved')
 response.redirection?
 # => false
-response.success?
-# => true
-
-response = HTTP.get('http://example.com')
-response.redirection?
-# => false
-response.success?
-# => true
-
-# 4xx
-response = HTTP.get('http://example.com')
-response.client_error?
-# => true
-response.error?
-# => true
-
-# 5xx
-response = HTTP.get('http://example.com')
-response.server_error?
-# => true
-response.error?
+response.successful?
 # => true
 ```
 

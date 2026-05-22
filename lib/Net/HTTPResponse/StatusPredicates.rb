@@ -12,7 +12,10 @@ module Net
         @code =~ /^2/ ? true : false
       end
       alias_method :success?, :successful?
-      alias_method :ok?, :successful?
+
+      def ok?
+        @code == '200'
+      end
 
       def redirection?
         @code =~ /^3/ ? true : false
