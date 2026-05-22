@@ -2,6 +2,15 @@
 
 ## 20260522
 
+1.0.0: API stability declaration.
+
+The verb interface (HTTP.get, HTTP.post, HTTP.put, HTTP.delete, HTTP.head, HTTP.options, HTTP.patch, HTTP.trace), the options hash, the redirect handling, the response predicates, and the retry configuration have been stable in shape for several releases. This release declares that commitment publicly: from here, any breaking change requires a major version bump.
+
+1. ~ HTTP::VERSION: /0.26.0/1.0.0/
+2. ~ CHANGELOG: + 1.0.0 entry
+
+## 20260522
+
 0.26.0: Documentation and housekeeping polish before 1.0.
 
 1. ~ README.md: Opening blurb now lists all supported verbs (get, head, options, trace, post, put, patch, delete) rather than claiming only GET/POST support.
