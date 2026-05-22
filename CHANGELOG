@@ -1,5 +1,16 @@
 # CHANGELOG
 
+# 20260522
+# 0.19.0: Change default verify_mode to VERIFY_PEER.
+1. ~ HTTP.request: Default verify_mode changed from OpenSSL::SSL::VERIFY_NONE to OpenSSL::SSL::VERIFY_PEER. Callers needing the old behaviour can pass verify_mode: OpenSSL::SSL::VERIFY_NONE explicitly through the options hash.
+2. ~ spec/HTTP/get_spec.rb: + specs for default verify_mode and explicit VERIFY_NONE override; /verify_mode: 0/verify_mode: OpenSSL::SSL::VERIFY_PEER/ in redirect specs.
+3. ~ spec/HTTP/post_spec.rb: /verify_mode: 0/verify_mode: OpenSSL::SSL::VERIFY_PEER/ in redirect specs.
+4. ~ spec/HTTP/put_spec.rb: /verify_mode: 0/verify_mode: OpenSSL::SSL::VERIFY_PEER/ in redirect specs.
+5. ~ spec/HTTP/delete_spec.rb: /verify_mode: 0/verify_mode: OpenSSL::SSL::VERIFY_PEER/ in redirect specs.
+6. ~ README.md: Note the new verify_mode default and how to opt back into VERIFY_NONE.
+7. ~ HTTP::VERSION: /0.18.3/0.19.0/
+8. ~ CHANGELOG: + 0.19.0 entry
+
 # 20260521
 # 0.18.3: Fix verb preservation on 307/308 redirects.
 1. ~ HTTP.request: Use original verb when following 307 or 308 redirects, per RFC 7231 §6.4.7 and RFC 7538. 301/302/303 keep legacy GET-on-redirect behaviour.

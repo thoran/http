@@ -148,7 +148,7 @@ describe ".delete" do
 
       it "does a redirect" do
         expect(HTTP).to receive(:delete).once.with(request_uri).and_call_original
-        expect(HTTP).to receive(:get).once.with(redirect_uri, {}, {}, {use_ssl: false, verify_mode: 0}).and_call_original
+        expect(HTTP).to receive(:get).once.with(redirect_uri, {}, {}, {use_ssl: false, verify_mode: OpenSSL::SSL::VERIFY_PEER}).and_call_original
         response = HTTP.delete(request_uri)
         expect(response.success?).to eq(true)
       end
@@ -163,7 +163,7 @@ describe ".delete" do
 
       it "does a redirect" do
         expect(HTTP).to receive(:delete).once.with(request_uri).and_call_original
-        expect(HTTP).to receive(:get).once.with(redirect_uri, {}, {}, {use_ssl: false, verify_mode: 0}).and_call_original
+        expect(HTTP).to receive(:get).once.with(redirect_uri, {}, {}, {use_ssl: false, verify_mode: OpenSSL::SSL::VERIFY_PEER}).and_call_original
         response = HTTP.delete(request_uri)
         expect(response.success?).to eq(true)
       end
@@ -190,7 +190,7 @@ describe ".delete" do
 
       it "does a redirect" do
         expect(HTTP).to receive(:delete).once.with(request_uri).and_call_original
-        expect(HTTP).to receive(:get).once.with(redirect_uri, {}, {}, {use_ssl: false, verify_mode: 0}).and_call_original
+        expect(HTTP).to receive(:get).once.with(redirect_uri, {}, {}, {use_ssl: false, verify_mode: OpenSSL::SSL::VERIFY_PEER}).and_call_original
         response = HTTP.delete(request_uri)
         expect(response.success?).to eq(true)
       end
@@ -205,7 +205,7 @@ describe ".delete" do
 
       it "does a redirect" do
         expect(HTTP).to receive(:delete).once.with(request_uri).and_call_original
-        expect(HTTP).to receive(:get).once.with(redirect_uri, {}, {}, {use_ssl: false, verify_mode: 0}).and_call_original
+        expect(HTTP).to receive(:get).once.with(redirect_uri, {}, {}, {use_ssl: false, verify_mode: OpenSSL::SSL::VERIFY_PEER}).and_call_original
         response = HTTP.delete(request_uri)
         expect(response.success?).to eq(true)
       end
@@ -227,7 +227,7 @@ describe ".delete" do
 
     it "preserves the verb" do
       expect(HTTP).to receive(:delete).with(request_uri).and_call_original.ordered
-      expect(HTTP).to receive(:delete).with(redirect_uri, {}, {}, {use_ssl: false, verify_mode: 0}).and_call_original.ordered
+      expect(HTTP).to receive(:delete).with(redirect_uri, {}, {}, {use_ssl: false, verify_mode: OpenSSL::SSL::VERIFY_PEER}).and_call_original.ordered
       response = HTTP.delete(request_uri)
       expect(response.success?).to eq(true)
     end

@@ -115,6 +115,32 @@ describe ".get" do
     end
   end
 
+  context "with default verify_mode" do
+    let(:uri){'http://example.com/path'}
+    let(:parsed_uri){URI.parse(uri)}
+    let(:net_http_object){Net::HTTP.new(parsed_uri.host, parsed_uri.port)}
+
+    before do
+      stub_request(:get, uri).
+        with(headers: {'Accept'=>'*/*', 'Accept-Encoding'=>'gzip;q=1.0,deflate;q=0.6,identity;q=0.3', 'User-Agent'=>'Ruby'}).
+          to_return(status: 200, body: '', headers: {})
+    end
+
+    it "defaults verify_mode to OpenSSL::SSL::VERIFY_PEER" do
+      allow(Net::HTTP).to receive(:new).with(parsed_uri.host, parsed_uri.port).and_return(net_http_object)
+      response = HTTP.get(uri)
+      expect(net_http_object.verify_mode).to eq(OpenSSL::SSL::VERIFY_PEER)
+      expect(response.success?).to eq(true)
+    end
+
+    it "allows opting back into VERIFY_NONE via options" do
+      allow(Net::HTTP).to receive(:new).with(parsed_uri.host, parsed_uri.port).and_return(net_http_object)
+      response = HTTP.get(uri, {}, {}, {verify_mode: OpenSSL::SSL::VERIFY_NONE})
+      expect(net_http_object.verify_mode).to eq(OpenSSL::SSL::VERIFY_NONE)
+      expect(response.success?).to eq(true)
+    end
+  end
+
   context "with block supplied" do
     let(:uri){'http://example.com/path'}
 
@@ -148,7 +174,7 @@ describe ".get" do
 
       it "does a redirect" do
         expect(HTTP).to receive(:get).once.with(request_uri).and_call_original
-        expect(HTTP).to receive(:get).once.with(redirect_uri, {}, {}, {use_ssl: false, verify_mode: 0}).and_call_original
+        expect(HTTP).to receive(:get).once.with(redirect_uri, {}, {}, {use_ssl: false, verify_mode: OpenSSL::SSL::VERIFY_PEER}).and_call_original
         response = HTTP.get(request_uri)
         expect(response.success?).to eq(true)
       end
@@ -163,7 +189,7 @@ describe ".get" do
 
       it "does a redirect" do
         expect(HTTP).to receive(:get).once.with(request_uri).and_call_original
-        expect(HTTP).to receive(:get).once.with(redirect_uri, {}, {}, {use_ssl: false, verify_mode: 0}).and_call_original
+        expect(HTTP).to receive(:get).once.with(redirect_uri, {}, {}, {use_ssl: false, verify_mode: OpenSSL::SSL::VERIFY_PEER}).and_call_original
         response = HTTP.get(request_uri)
         expect(response.success?).to eq(true)
       end
@@ -190,7 +216,7 @@ describe ".get" do
 
       it "does a redirect" do
         expect(HTTP).to receive(:get).once.with(request_uri).and_call_original
-        expect(HTTP).to receive(:get).once.with(redirect_uri, {}, {}, {use_ssl: false, verify_mode: 0}).and_call_original
+        expect(HTTP).to receive(:get).once.with(redirect_uri, {}, {}, {use_ssl: false, verify_mode: OpenSSL::SSL::VERIFY_PEER}).and_call_original
         response = HTTP.get(request_uri)
         expect(response.success?).to eq(true)
       end
@@ -205,7 +231,7 @@ describe ".get" do
 
       it "does a redirect" do
         expect(HTTP).to receive(:get).once.with(request_uri).and_call_original
-        expect(HTTP).to receive(:get).once.with(redirect_uri, {}, {}, {use_ssl: false, verify_mode: 0}).and_call_original
+        expect(HTTP).to receive(:get).once.with(redirect_uri, {}, {}, {use_ssl: false, verify_mode: OpenSSL::SSL::VERIFY_PEER}).and_call_original
         response = HTTP.get(request_uri)
         expect(response.success?).to eq(true)
       end
@@ -228,7 +254,7 @@ describe ".get" do
 
     it "preserves the HTTPS scheme on a relative redirect" do
       expect(HTTP).to receive(:get).once.with(request_uri).and_call_original
-      expect(HTTP).to receive(:get).once.with(redirect_uri, {}, {}, {use_ssl: true, verify_mode: 0}).and_call_original
+      expect(HTTP).to receive(:get).once.with(redirect_uri, {}, {}, {use_ssl: true, verify_mode: OpenSSL::SSL::VERIFY_PEER}).and_call_original
       response = HTTP.get(request_uri)
       expect(response.success?).to eq(true)
     end

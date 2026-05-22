@@ -16,7 +16,7 @@ module HTTP
     http = Net::HTTP.new(uri.host, uri.port)
     no_redirect = options.delete(:no_redirect)
     options[:use_ssl] ||= uri.use_ssl?
-    options[:verify_mode] ||= OpenSSL::SSL::VERIFY_NONE
+    options[:verify_mode] ||= OpenSSL::SSL::VERIFY_PEER
     http.options = options
     request_object.headers = headers
     request_object.basic_auth(uri.user, uri.password) if uri.user

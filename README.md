@@ -241,6 +241,10 @@ verify_mode
     # SSL/TLS session.
     #
     # OpenSSL::SSL::VERIFY_NONE or OpenSSL::SSL::VERIFY_PEER are acceptable.
+    #
+    # Defaults to OpenSSL::SSL::VERIFY_PEER as of 0.19.0. To opt back into the
+    # previous behaviour, pass verify_mode: OpenSSL::SSL::VERIFY_NONE through
+    # the options hash.
 ```
 
 ## Contributing

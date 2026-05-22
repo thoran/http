@@ -286,7 +286,7 @@ describe ".put" do
 
       it "does a redirect" do
         expect(HTTP).to receive(:put).once.with(request_uri).and_call_original
-        expect(HTTP).to receive(:get).once.with(redirect_uri, {}, {}, {use_ssl: false, verify_mode: 0}).and_call_original
+        expect(HTTP).to receive(:get).once.with(redirect_uri, {}, {}, {use_ssl: false, verify_mode: OpenSSL::SSL::VERIFY_PEER}).and_call_original
         response = HTTP.put(request_uri)
         expect(response.success?).to eq(true)
       end
@@ -301,7 +301,7 @@ describe ".put" do
 
       it "does a redirect" do
         expect(HTTP).to receive(:put).once.with(request_uri).and_call_original
-        expect(HTTP).to receive(:get).once.with(redirect_uri, {}, {}, {use_ssl: false, verify_mode: 0}).and_call_original
+        expect(HTTP).to receive(:get).once.with(redirect_uri, {}, {}, {use_ssl: false, verify_mode: OpenSSL::SSL::VERIFY_PEER}).and_call_original
         response = HTTP.put(request_uri)
         expect(response.success?).to eq(true)
       end
@@ -328,7 +328,7 @@ describe ".put" do
 
       it "does a redirect" do
         expect(HTTP).to receive(:put).once.with(request_uri).and_call_original
-        expect(HTTP).to receive(:get).once.with(redirect_uri, {}, {}, {use_ssl: false, verify_mode: 0}).and_call_original
+        expect(HTTP).to receive(:get).once.with(redirect_uri, {}, {}, {use_ssl: false, verify_mode: OpenSSL::SSL::VERIFY_PEER}).and_call_original
         response = HTTP.put(request_uri)
         expect(response.success?).to eq(true)
       end
@@ -343,7 +343,7 @@ describe ".put" do
 
       it "does a redirect" do
         expect(HTTP).to receive(:put).once.with(request_uri).and_call_original
-        expect(HTTP).to receive(:get).once.with(redirect_uri, {}, {}, {use_ssl: false, verify_mode: 0}).and_call_original
+        expect(HTTP).to receive(:get).once.with(redirect_uri, {}, {}, {use_ssl: false, verify_mode: OpenSSL::SSL::VERIFY_PEER}).and_call_original
         response = HTTP.put(request_uri)
         expect(response.success?).to eq(true)
       end
@@ -365,7 +365,7 @@ describe ".put" do
 
     it "preserves the verb" do
       expect(HTTP).to receive(:put).with(request_uri).and_call_original.ordered
-      expect(HTTP).to receive(:put).with(redirect_uri, '', {}, {use_ssl: false, verify_mode: 0}).and_call_original.ordered
+      expect(HTTP).to receive(:put).with(redirect_uri, '', {}, {use_ssl: false, verify_mode: OpenSSL::SSL::VERIFY_PEER}).and_call_original.ordered
       response = HTTP.put(request_uri)
       expect(response.success?).to eq(true)
     end
