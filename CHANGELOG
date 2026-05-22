@@ -2,6 +2,20 @@
 
 ## 20260522
 
+0.25.0: Remove unused internal machinery; require Ruby >= 3.2.
+
+1. ~ HTTP/verbs.rb: /"Net::HTTP::#{verb.to_s.capitalize}".to_const/Net::HTTP.const_get(verb.to_s.capitalize)/. The recursive String#to_const was overkill for a single-level lookup inside Net::HTTP; const_get does it directly.
+2. - lib/String/to_const.rb
+3. - lib/Thoran/String/ToConst/to_const.rb
+4. - lib/Thoran/Array/AllButFirst/all_but_first.rb (was only used by to_const)
+5. - lib/Thoran/Array/FirstX/firstX.rb (was only used by all_but_first)
+6. ~ lib/HTTP.rb: Remove $LOAD_PATH.unshift; rubygems puts lib/ on the load path for installed gems and bundler does the same for local development.
+7. ~ http.rb.gemspec: /required_ruby_version = '>= 2.7'/required_ruby_version = '>= 3.2'/. Aligns with the minitest 6.0 floor used in development; the runtime would still load on 2.7, but claiming compatibility with a Ruby the test suite can't be run against is a fiction worth ending before 1.0.
+8. ~ HTTP::VERSION: /0.24.0/0.25.0/
+9. ~ CHANGELOG: + 0.25.0 entry
+
+## 20260522
+
 0.24.0: ok? predicate now means 200 specifically.
 
 1. ~ Net::HTTPResponse::StatusPredicates: ok? is now defined as @code == '200' rather than aliased to successful?. The alias semantics (any 2xx) misled — "OK" is the reason-phrase for 200 specifically, not the 2xx class. Migration: callers wanting any-2xx should use successful? (or its alias success?).

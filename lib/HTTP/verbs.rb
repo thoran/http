@@ -6,7 +6,6 @@ require 'net/http'
 
 require_relative '../Hash/x_www_form_urlencode'
 require_relative './request'
-require_relative '../String/to_const'
 
 module HTTP
   module VERBS
@@ -21,7 +20,7 @@ module HTTP
       unless args.empty?
         request_uri += '?' + args.x_www_form_urlencode
       end
-      request_object = "Net::HTTP::#{verb.to_s.capitalize}".to_const.new(request_uri)
+      request_object = Net::HTTP.const_get(verb.to_s.capitalize).new(request_uri)
       request(uri, request_object, headers, options, &block)
     end
 
@@ -31,7 +30,7 @@ module HTTP
   VERBS::WITH_BODY.each do |verb|
     define_method(verb) do |uri, data = {}, headers = {}, options = {}, &block|
       uri = uri.is_a?(URI) ? uri : URI.parse(uri)
-      request_object = "Net::HTTP::#{verb.to_s.capitalize}".to_const.new(uri.request_uri)
+      request_object = Net::HTTP.const_get(verb.to_s.capitalize).new(uri.request_uri)
       content_type = headers.find{|k, v| k.downcase == 'content-type'}&.last.to_s
       if data.is_a?(String)
         request_object.body = data
