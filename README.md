@@ -4,7 +4,7 @@ For many years this was a personal library, from around the middle of 2009 from 
 
 Like many others before and after me with their respective libraries, I created it to simplify the heinous interface that is Net::HTTP. At the time of it's original creation I was doing a lot of a webscraping and didn't want a half-dozen line setup to make simple requests. It has stood the test of time, for me personally insofar as the interface remaining simpler than most other similar libraries, though it is also less full featured, but nevertheless for it's tiny size it packs in quite a bit.
 
-Perhaps some will appreciate its relative simplicity, since it is much smaller and the usage simpler than any of the other 'wrapper' libraries, such that it can be read and comprehended in full in as little as a couple of minutes.  It does just enough to do most simple HTTP GET and POST requests as simply as should be.
+Perhaps some will appreciate its relative simplicity, since it is much smaller and the usage simpler than any of the other 'wrapper' libraries, such that it can be read and comprehended in full in as little as a couple of minutes.  All the standard verbs — `get`, `head`, `options`, `trace`, `post`, `put`, `patch`, `delete` — are supported through a single uniform interface.
 
 
 ## Installation

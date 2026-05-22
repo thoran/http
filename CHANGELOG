@@ -2,6 +2,16 @@
 
 ## 20260522
 
+0.26.0: Documentation and housekeeping polish before 1.0.
+
+1. ~ README.md: Opening blurb now lists all supported verbs (get, head, options, trace, post, put, patch, delete) rather than claiming only GET/POST support.
+2. - TODO: All entries were marked (Done as of …); CHANGELOG carries the same history more legibly.
+3. ~ http.rb.gemspec: /http:\/\/github.com\/thoran\/HTTP/https:\/\/github.com\/thoran\/http/. Lowercase matches the actual repo; https since GitHub no longer serves plain http.
+4. ~ HTTP::VERSION: /0.25.0/0.26.0/
+5. ~ CHANGELOG: + 0.26.0 entry
+
+## 20260522
+
 0.25.0: Remove unused internal machinery; require Ruby >= 3.2.
 
 1. ~ HTTP/verbs.rb: /"Net::HTTP::#{verb.to_s.capitalize}".to_const/Net::HTTP.const_get(verb.to_s.capitalize)/. The recursive String#to_const was overkill for a single-level lookup inside Net::HTTP; const_get does it directly.
