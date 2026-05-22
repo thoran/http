@@ -84,6 +84,34 @@ HTTP.get('http://example.com', {}, {}, {no_redirect: true})
 # => #<Net::HTTPResponse @code=3xx>
 ```
 
+### Retries
+
+Retries are disabled by default. Enable them by passing `retries:` in the options hash.
+
+```ruby
+HTTP.get('http://example.com', {}, {}, {retries: 3})
+```
+
+When enabled, transient network exceptions and retry-worthy HTTP status codes (429, 502, 503, 504) are retried with exponential backoff and jitter. If the response carries a `Retry-After` header, it is honoured in place of the calculated delay.
+
+Only idempotent verbs (`get`, `head`, `options`, `put`, `delete`, `trace`) are retried by default. POST and PATCH are not — retrying a non-idempotent write can create duplicate resources against APIs that don't deduplicate. Opt in per-call via `retry_verbs:`.
+
+```ruby
+HTTP.post('http://example.com', {a: 1}, {}, {retries: 3, retry_verbs: %i{get post}})
+```
+
+Configurable options:
+
+```ruby
+options = {
+  retries: 3,                                   # max retry attempts; 0 disables
+  retry_delay: 1.0,                             # base delay (seconds) for exponential backoff
+  retry_status_codes: [429, 502, 503, 504],     # HTTP status codes to retry
+  retry_exceptions: HTTP::RETRY::EXCEPTIONS,    # exceptions to retry
+  retry_verbs: HTTP::RETRY::VERBS               # verbs that retry by default
+}
+```
+
 ### Response status predicate methods
 
 ```ruby

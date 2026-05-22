@@ -1,6 +1,16 @@
 # CHANGELOG
 
 # 20260522
+# 0.20.0: Add opt-in retry logic with exponential backoff.
+1. + lib/HTTP/RETRY.rb: Retry helpers (with_retries, backoff_delay, retry_after) and constants (HTTP::RETRY::EXCEPTIONS, STATUS_CODES, VERBS).
+2. ~ HTTP.request: Retry on transient network exceptions and retry-worthy HTTP status codes (429, 502, 503, 504) when enabled. Exponential backoff with jitter. Honours Retry-After when present. Disabled by default; opt in via the retries option. Configurable via new options: retries (default 0), retry_delay (default 1.0), retry_status_codes, retry_exceptions, retry_verbs. Only idempotent verbs (get, head, options, put, delete, trace) retry by default; opt in to POST/PATCH retries via retry_verbs.
+3. + spec/HTTP/RETRY_spec.rb: Specs for retry behaviour and the helpers.
+4. ~ README.md: + Retries section.
+5. ~ TODO: Annotate "Add retry logic to HTTP.request" as (Done as of 0.20.0); also annotate three previously-completed items as (Done as of 0.18.2), (Done as of 0.18.3), and (Done as of 0.19.0).
+6. ~ HTTP::VERSION: /0.19.0/0.20.0/
+7. ~ CHANGELOG: + 0.20.0 entry
+
+# 20260522
 # 0.19.0: Change default verify_mode to VERIFY_PEER.
 1. ~ HTTP.request: Default verify_mode changed from OpenSSL::SSL::VERIFY_NONE to OpenSSL::SSL::VERIFY_PEER. Callers needing the old behaviour can pass verify_mode: OpenSSL::SSL::VERIFY_NONE explicitly through the options hash.
 2. ~ spec/HTTP/get_spec.rb: + specs for default verify_mode and explicit VERIFY_NONE override; /verify_mode: 0/verify_mode: OpenSSL::SSL::VERIFY_PEER/ in redirect specs.

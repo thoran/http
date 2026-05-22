@@ -9,18 +9,27 @@ require_relative '../Net/HTTP/set_options'
 require_relative '../Net/HTTPRequest/set_headers'
 require_relative '../Net/HTTPResponse/StatusPredicates'
 require_relative '../URI/Generic/use_sslQ'
+require_relative './RETRY'
 
 module HTTP
   def request(uri, request_object, headers = {}, options = {}, &block)
     uri = uri.is_a?(URI) ? uri : URI.parse(uri)
     http = Net::HTTP.new(uri.host, uri.port)
     no_redirect = options.delete(:no_redirect)
+    config = retry_config(options)
     options[:use_ssl] ||= uri.use_ssl?
     options[:verify_mode] ||= OpenSSL::SSL::VERIFY_PEER
     http.options = options
     request_object.headers = headers
     request_object.basic_auth(uri.user, uri.password) if uri.user
-    response = http.request(request_object)
+    verb = request_object.method.downcase.to_sym
+    response = (
+      if config[:retries] > 0 && config[:verbs].include?(verb)
+        with_retries(http, request_object, config)
+      else
+        http.request(request_object)
+      end
+    )
     if response.code =~ /^3/
       if block_given? && no_redirect
         yield response
@@ -29,7 +38,6 @@ module HTTP
       end
       redirect_uri = uri.merge(response.header['location'])
       if response.code =~ /^30[78]$/
-        verb = request_object.method.downcase.to_sym
         data = VERBS::WITH_BODY.include?(verb) ? request_object.body : {}
         response = send(verb, redirect_uri.to_s, data, headers, options, &block)
       else

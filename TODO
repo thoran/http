@@ -1,7 +1,7 @@
 # TODO.txt
 
-- SSL verification is hardcoded to VERIFY_NONE. Should be configurable or default to VERIFY_PEER.
-- Redirect handling does not preserve the original HTTP verb for 307/308 responses. See: https://peterdaugaardrasmussen.com/2020/05/09/how-to-redirect-http-put-or-post-requests/
-- Redirect handling hardcodes "http://" for relative redirects, losing the scheme if the original request was HTTPS.
+- SSL verification is hardcoded to VERIFY_NONE. Should be configurable or default to VERIFY_PEER. (Done as of 0.19.0)
+- Redirect handling does not preserve the original HTTP verb for 307/308 responses. See: https://peterdaugaardrasmussen.com/2020/05/09/how-to-redirect-http-put-or-post-requests/ (Done as of 0.18.3)
+- Redirect handling hardcodes "http://" for relative redirects, losing the scheme if the original request was HTTPS. (Done as of 0.18.2)
 - Convert specs from RSpec to MiniTest.
-- Add retry logic to HTTP.request.
+- Add retry logic to HTTP.request. (Done as of 0.20.0)
