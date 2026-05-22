@@ -31,13 +31,14 @@ Gem::Specification.new do |spec|
     'Rakefile',
     'README.md',
     Dir['lib/**/*.rb'],
-    Dir['spec/**/*.rb'],
+    Dir['test/**/*.rb'],
   ].flatten
 
-  spec.development_dependencies = %w{
-    pry
-    rake
-    rspec
-    webmock
-  }
+  spec.development_dependencies = [
+    ['minitest', '~> 6.0'],
+    'minitest-mock',
+    'pry',
+    'rake',
+    'webmock',
+  ]
 end

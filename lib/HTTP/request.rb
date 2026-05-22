@@ -36,7 +36,7 @@ module HTTP
       elsif no_redirect
         return response
       end
-      redirect_uri = uri.merge(response.header['location'])
+      redirect_uri = uri.merge(response['location'])
       if response.code =~ /^30[78]$/
         data = VERBS::WITH_BODY.include?(verb) ? request_object.body : {}
         response = send(verb, redirect_uri.to_s, data, headers, options, &block)

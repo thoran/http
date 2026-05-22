@@ -1,9 +1,9 @@
 # Rakefile
 
-require 'rspec/core/rake_task'
+require 'rake/testtask'
 
-RSpec::Core::RakeTask.new(:spec) do |t|
-  t.verbose = false
+Rake::TestTask.new do |t|
+  t.test_files = FileList['test/**/*_test.rb']
 end
 
-task default: :spec
+task default: :test

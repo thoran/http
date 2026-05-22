@@ -1,35 +1,34 @@
-# spec/HTTP/head_spec.rb
+# test/HTTP/head_test.rb
 
-require_relative '../spec_helper'
-require 'http'
+require_relative '../helper'
 
 describe ".head" do
-  context "with uri-only supplied" do
+  describe "with uri-only supplied" do
     before do
       stub_request(:head, 'http://example.com/path').
         to_return(status: 200, body: '', headers: {'Content-Type' => 'text/html'})
     end
 
-    context "uri as a string" do
+    describe "uri as a string" do
       let(:uri){'http://example.com/path'}
 
       it "returns a successful response" do
         response = HTTP.head(uri)
-        expect(response.success?).to eq(true)
+        _(response.success?).must_equal(true)
       end
     end
 
-    context "uri as a URI" do
+    describe "uri as a URI" do
       let(:uri){URI.parse('http://example.com/path')}
 
       it "returns a successful response" do
         response = HTTP.head(uri)
-        expect(response.success?).to eq(true)
+        _(response.success?).must_equal(true)
       end
     end
   end
 
-  context "with args supplied" do
+  describe "with args supplied" do
     let(:uri){'http://example.com/path'}
 
     before do
@@ -39,26 +38,26 @@ describe ".head" do
 
     it "appends query parameters" do
       response = HTTP.head(uri, {a: 1, b: 2})
-      expect(response.success?).to eq(true)
+      _(response.success?).must_equal(true)
     end
   end
 
-  context "with headers supplied" do
+  describe "with headers supplied" do
     let(:uri){'http://example.com/path'}
 
     before do
       stub_request(:head, 'http://example.com/path').
-        with(headers: {'User-Agent' => 'Rspec'}).
-        to_return(status: 200, body: '', headers: {})
+        with(headers: {'User-Agent' => 'Minitest'}).
+          to_return(status: 200, body: '', headers: {})
     end
 
     it "sets the headers on the request" do
-      response = HTTP.head(uri, {}, {'User-Agent' => 'Rspec'})
-      expect(response.success?).to eq(true)
+      response = HTTP.head(uri, {}, {'User-Agent' => 'Minitest'})
+      _(response.success?).must_equal(true)
     end
   end
 
-  context "with options supplied" do
+  describe "with options supplied" do
     let(:uri){'http://example.com/path'}
 
     before do
@@ -68,11 +67,11 @@ describe ".head" do
 
     it "sets the use_ssl option on the Net::HTTP instance" do
       response = HTTP.head(uri, {}, {}, {use_ssl: true})
-      expect(response.success?).to eq(true)
+      _(response.success?).must_equal(true)
     end
   end
 
-  context "with block supplied" do
+  describe "with block supplied" do
     let(:uri){'http://example.com/path'}
 
     before do
@@ -81,11 +80,13 @@ describe ".head" do
     end
 
     it "yields an instance of Net::HTTPResponse" do
-      expect{|b| HTTP.head(uri, &b)}.to yield_with_args(Net::HTTPResponse)
+      yielded = nil
+      HTTP.head(uri){|response| yielded = response}
+      _(yielded).must_be_kind_of(Net::HTTPResponse)
     end
   end
 
-  context "with redirection" do
+  describe "with redirection" do
     let(:request_uri){'http://example.com/path'}
     let(:redirect_uri){'http://redirected.com'}
 
@@ -98,11 +99,13 @@ describe ".head" do
 
     it "follows the redirect" do
       response = HTTP.head(request_uri)
-      expect(response.success?).to eq(true)
+      _(response.success?).must_equal(true)
+      assert_requested(:head, request_uri)
+      assert_requested(:get, redirect_uri)
     end
   end
 
-  context "no_redirect true" do
+  describe "no_redirect true" do
     let(:request_uri){'http://example.com/path'}
 
     before do
@@ -110,9 +113,9 @@ describe ".head" do
         to_return(status: 301, headers: {'location' => 'http://redirected.com'})
     end
 
-    it "returns the redirect response" do
+    it "returns the redirect response without following it" do
       response = HTTP.head(request_uri, {}, {}, {no_redirect: true})
-      expect(response.redirection?).to eq(true)
+      _(response.redirection?).must_equal(true)
     end
   end
 end
