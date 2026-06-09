@@ -77,6 +77,22 @@ HTTP.post('http://example.com', {a: 1, b: 2}, {'User-Agent'=>'Custom'}, {use_ssl
 end
 ```
 
+### Basic authentication
+
+Pass `username:` and `password:` through the options hash:
+
+```ruby
+HTTP.get('http://example.com', {}, {}, {username: 'alice', password: 'secret'})
+```
+
+Credentials embedded in the URI continue to work and serve as a fallback:
+
+```ruby
+HTTP.get('http://alice:secret@example.com')
+```
+
+When both are supplied, the options hash wins.
+
 ### Preventing redirections
 
 ```ruby
@@ -167,11 +183,18 @@ end
 ```
 
 ## Allowed values for the options hash
-#### (These pass through to Net::HTTP, except for `no_redirect`.)
+#### (These pass through to Net::HTTP, except for `no_redirect`, `username`, and `password`.)
 
 ```Ruby
 no_redirect
     # Prevents redirection if a 3xx response is encountered.
+
+username
+    # Username for HTTP basic authentication. Takes precedence over any
+    # credentials embedded in the URI.
+
+password
+    # Password for HTTP basic authentication, paired with username.
 
 ca_file
     # Sets path of a CA certification file in PEM format.

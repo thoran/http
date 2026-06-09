@@ -1,5 +1,17 @@
 # CHANGELOG
 
+## 20260609
+
+1.1.0: Basic auth via the options hash.
+
+Until now basic authentication was only available through credentials embedded in the URI, which forced callers needing programmatic credentials (notably the webdav gem) to construct their own Net::HTTP request objects and bypass the verb methods entirely. The options hash now accepts username: and password:, extracted the same way no_redirect is, so they never leak through to Net::HTTP. This is additive: URI credentials still work as a fallback, and explicit options take precedence over them.
+
+1. ~ HTTP/request.rb: Extract :username and :password from the options hash; basic_auth now prefers the explicit credentials and falls back to the URI credentials.
+2. + test/HTTP/basic_auth_test.rb
+3. ~ README.md: + Basic authentication usage section; document the username and password options.
+4. ~ HTTP::VERSION: /1.0.0/1.1.0/
+5. ~ CHANGELOG: + 1.1.0 entry
+
 ## 20260522
 
 1.0.0: API stability declaration.

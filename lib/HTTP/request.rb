@@ -16,13 +16,19 @@ module HTTP
     uri = uri.is_a?(URI) ? uri : URI.parse(uri)
     http = Net::HTTP.new(uri.host, uri.port)
     no_redirect = options.delete(:no_redirect)
+    username = options.delete(:username)
+    password = options.delete(:password)
     config = retry_config(options)
     http.options = options.merge(
       use_ssl: (options[:use_ssl] || uri.use_ssl?),
       verify_mode: (options[:verify_mode] || OpenSSL::SSL::VERIFY_PEER)
     )
     request_object.headers = headers
-    request_object.basic_auth(uri.user, uri.password) if uri.user
+    if username
+      request_object.basic_auth(username, password)
+    elsif uri.user
+      request_object.basic_auth(uri.user, uri.password)
+    end
     verb = request_object.method.downcase.to_sym
     response = (
       if config[:retries] > 0 && config[:verbs].include?(verb)
