@@ -182,6 +182,20 @@ class A
 end
 ```
 
+### Constructing requests for other methods
+
+The named methods cover the HTTP methods with a request class in Ruby's `Net::HTTP` stdlib. For anything else — a method without a named helper, such as `PROPFIND` — the same body encoding, query string, and request handling is available directly:
+
+```ruby
+# No body — args become a query string:
+HTTP.request_without_body(:propfind, 'http://example.com/path', {depth: 1})
+
+# With a body — string passthrough, JSON when the content type says so, form data otherwise:
+HTTP.request_with_body(:propfind, 'http://example.com/path', xml, {'Content-Type' => 'application/xml'})
+```
+
+Both take the same `(method, uri, args_or_data, headers, options, &block)` arguments as the named methods, with the method as the first argument, and the named methods delegate to them. For full control over the request object, drop down to `HTTP.request(uri, request_object, headers, options, &block)`.
+
 ## Allowed values for the options hash
 #### (These pass through to Net::HTTP, except for `no_redirect`, `username`, and `password`.)
 

@@ -2,6 +2,19 @@
 
 ## 20260609
 
+1.2.0: Extract request_without_body and request_with_body.
+
+The logic for building request objects — constructing the Net::HTTP request class, encoding bodies, and assembling query strings — lived inside the define_method loops and was unreachable except through the eight named methods. Downstream gems needing a method without a named helper (notably webdav's PROPFIND) had to build raw Net::HTTP request objects and bypass that logic entirely. Those two loop bodies are now module functions, callable directly as HTTP.request_without_body(method, ...) and HTTP.request_with_body(method, ...); the named methods delegate to them and behave identically.
+
+1. ~ HTTP/verbs.rb: + request_without_body() and request_with_body() module functions; the WITHOUT_BODY and WITH_BODY define_method loops now delegate to them.
+2. + test/HTTP/request_without_body_test.rb
+3. + test/HTTP/request_with_body_test.rb
+4. ~ README.md: + Constructing requests for other methods section.
+5. ~ HTTP::VERSION: /1.1.0/1.2.0/
+6. ~ CHANGELOG: + 1.2.0 entry
+
+## 20260609
+
 1.1.0: Basic auth via the options hash.
 
 Until now basic authentication was only available through credentials embedded in the URI, which forced callers needing programmatic credentials (notably the webdav gem) to construct their own Net::HTTP request objects and bypass the verb methods entirely. The options hash now accepts username: and password:, extracted the same way no_redirect is, so they never leak through to Net::HTTP. This is additive: URI credentials still work as a fallback, and explicit options take precedence over them.
