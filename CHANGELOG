@@ -2,6 +2,18 @@
 
 ## 20260609
 
+1.2.1: Split the request builders into their own files.
+
+request_with_body and request_without_body, added in 1.2.0, each move into their own file, matching the one-method-per-file layout used throughout lib/. Purely internal reorganisation — the methods, their signatures, and their behaviour are unchanged — so it is a patch, not a minor.
+
+1. + lib/HTTP/request_without_body.rb: HTTP.request_without_body, extracted from verbs.rb; requires net/http and the Hash#x_www_form_urlencode extension.
+2. + lib/HTTP/request_with_body.rb: HTTP.request_with_body, extracted from verbs.rb; requires net/http and json.
+3. ~ HTTP/verbs.rb: the request builders are extracted; the file now requires the two new files and keeps the VERBS constant and the named-method generation.
+4. ~ HTTP::VERSION: /1.2.0/1.2.1/
+5. ~ CHANGELOG: + 1.2.1 entry
+
+## 20260609
+
 1.2.0: Extract request_without_body and request_with_body.
 
 The logic for building request objects — constructing the Net::HTTP request class, encoding bodies, and assembling query strings — lived inside the define_method loops and was unreachable except through the eight named methods. Downstream gems needing a method without a named helper (notably webdav's PROPFIND) had to build raw Net::HTTP request objects and bypass that logic entirely. Those two loop bodies are now module functions, callable directly as HTTP.request_without_body(method, ...) and HTTP.request_with_body(method, ...); the named methods delegate to them and behave identically.
