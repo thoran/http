@@ -110,10 +110,10 @@ HTTP.get('http://example.com', {}, {}, {retries: 3})
 
 When enabled, transient network exceptions and retry-worthy HTTP status codes (429, 502, 503, 504) are retried with exponential backoff and jitter. If the response carries a `Retry-After` header, it is honoured in place of the calculated delay.
 
-Only idempotent verbs (`get`, `head`, `options`, `put`, `delete`, `trace`) are retried by default. POST and PATCH are not — retrying a non-idempotent write can create duplicate resources against APIs that don't deduplicate. Opt in per-call via `retry_verbs:`.
+Only idempotent methods (`get`, `head`, `options`, `put`, `delete`, `trace`) are retried by default. POST and PATCH are not — retrying a non-idempotent write can create duplicate resources against APIs that don't deduplicate. Opt in per-call via `retry_methods:` (the older `retry_verbs:` is still accepted).
 
 ```ruby
-HTTP.post('http://example.com', {a: 1}, {}, {retries: 3, retry_verbs: %i{get post}})
+HTTP.post('http://example.com', {a: 1}, {}, {retries: 3, retry_methods: %i{get post}})
 ```
 
 Configurable options:
@@ -124,7 +124,7 @@ options = {
   retry_delay: 1.0,                             # base delay (seconds) for exponential backoff
   retry_status_codes: [429, 502, 503, 504],     # HTTP status codes to retry
   retry_exceptions: HTTP::RETRY::EXCEPTIONS,    # exceptions to retry
-  retry_verbs: HTTP::RETRY::VERBS               # verbs that retry by default
+  retry_methods: HTTP::RETRY::METHODS           # methods that retry by default (retry_verbs still accepted)
 }
 ```
 

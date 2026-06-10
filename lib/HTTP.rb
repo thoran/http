@@ -1,4 +1,4 @@
 # HTTP.rb
 # HTTP
 
-require 'HTTP/verbs'
+require 'HTTP/METHODS'

@@ -177,6 +177,7 @@ describe "retry behaviour" do
           retry_delay: 0.1,
           retry_status_codes: [500],
           retry_exceptions: [Errno::ECONNRESET],
+          retry_methods: %i{get},
           retry_verbs: %i{get}
         })
       end
@@ -184,6 +185,7 @@ describe "retry behaviour" do
       _(received_opts).wont_include(:retry_delay)
       _(received_opts).wont_include(:retry_status_codes)
       _(received_opts).wont_include(:retry_exceptions)
+      _(received_opts).wont_include(:retry_methods)
       _(received_opts).wont_include(:retry_verbs)
     end
   end
@@ -236,6 +238,24 @@ describe "retry behaviour" do
       HTTP::RETRY.stub(:sleep, nil) do
         stub_request(:post, uri).to_return({status: 503}, {status: 200, body: ''})
         response = HTTP.post(uri, {}, {}, {retries: 3, retry_verbs: %i{get post}})
+        _(response.success?).must_equal(true)
+        assert_requested(:post, uri, times: 2)
+      end
+    end
+
+    it "retries POST when opted in via retry_methods" do
+      HTTP::RETRY.stub(:sleep, nil) do
+        stub_request(:post, uri).to_return({status: 503}, {status: 200, body: ''})
+        response = HTTP.post(uri, {}, {}, {retries: 3, retry_methods: %i{get post}})
+        _(response.success?).must_equal(true)
+        assert_requested(:post, uri, times: 2)
+      end
+    end
+
+    it "prefers retry_methods over retry_verbs when both are given" do
+      HTTP::RETRY.stub(:sleep, nil) do
+        stub_request(:post, uri).to_return({status: 503}, {status: 200, body: ''})
+        response = HTTP.post(uri, {}, {}, {retries: 3, retry_methods: %i{get post}, retry_verbs: %i{get}})
         _(response.success?).must_equal(true)
         assert_requested(:post, uri, times: 2)
       end

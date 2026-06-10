@@ -29,9 +29,9 @@ module HTTP
     elsif uri.user
       request_object.basic_auth(uri.user, uri.password)
     end
-    verb = request_object.method.downcase.to_sym
+    request_method = request_object.method.downcase.to_sym
     response = (
-      if config[:retries] > 0 && config[:verbs].include?(verb)
+      if config[:retries] > 0 && config[:methods].include?(request_method)
         with_retries(http, request_object, config)
       else
         http.request(request_object)
@@ -45,8 +45,8 @@ module HTTP
       end
       redirect_uri = uri.merge(response['location'])
       if response.code =~ /^30[78]$/
-        data = VERBS::WITH_BODY.include?(verb) ? request_object.body : {}
-        response = send(verb, redirect_uri.to_s, data, headers, options, &block)
+        data = METHODS::WITH_BODY.include?(request_method) ? request_object.body : {}
+        response = send(request_method, redirect_uri.to_s, data, headers, options, &block)
       else
         response = get(redirect_uri.to_s, {}, {}, options, &block)
       end

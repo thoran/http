@@ -19,7 +19,9 @@ module HTTP
       EOFError
     ].freeze
     STATUS_CODES = [429, 502, 503, 504].freeze
-    VERBS = %i{get head options put delete trace}.freeze
+    METHODS = %i{get head options put delete trace}.freeze
+    VERBS = METHODS # Deprecated alias for METHODS; to be removed in 2.0.0.
+    deprecate_constant :VERBS
 
     def self.sleep(seconds)
       Kernel.sleep(seconds)
@@ -32,7 +34,7 @@ module HTTP
       delay: options.delete(:retry_delay) || 1.0,
       status_codes: options.delete(:retry_status_codes) || RETRY::STATUS_CODES,
       exceptions: options.delete(:retry_exceptions) || RETRY::EXCEPTIONS,
-      verbs: options.delete(:retry_verbs) || RETRY::VERBS
+      methods: [options.delete(:retry_methods), options.delete(:retry_verbs)].compact.first || RETRY::METHODS
     }
   end
   module_function :retry_config

@@ -1,6 +1,23 @@
 # CHANGELOG
 
-## 20260609
+## 20260610
+
+1.3.0: Rename VERBS to METHODS; VERBS retained as a deprecated alias.
+
+RFC 9110 calls these "methods", not "verbs". HTTP::VERBS becomes HTTP::METHODS and HTTP::RETRY::VERBS becomes HTTP::RETRY::METHODS, with the old names kept as deprecated aliases (via deprecate_constant) so nothing breaks. The call surface — the named methods, the options hash, HTTP.request, request_with_body/request_without_body — is unchanged. The aliases are scheduled for removal in 2.0.0; that removal is the breaking change the major bump is reserved for.
+
+1. /lib/HTTP/verbs.rb/lib/HTTP/METHODS.rb/: the file is now named for the METHODS module it defines, matching RETRY.rb and VERSION.rb.
+2. ~ HTTP/METHODS.rb: /VERBS/METHODS/ for the WITHOUT_BODY/WITH_BODY container; + VERBS deprecated alias; /verb/request_method/ in the block variable.
+3. ~ HTTP.rb: require 'HTTP/METHODS' in place of require 'HTTP/verbs'.
+4. ~ HTTP/RETRY.rb: /VERBS/METHODS/ for the default retry method list; + VERBS deprecated alias. retry_config now accepts the :retry_methods option (preferred) and still honours :retry_verbs as a backwards-compatible alias; its internal config key is /verbs/methods/.
+5. ~ HTTP/request.rb: the 307/308 redirect handler now references METHODS::WITH_BODY, and the retry guard reads config[:methods]; /verb/request_method/.
+6. ~ test/HTTP/RETRY_test.rb: + retry_methods opt-in and retry_methods-over-retry_verbs precedence cases; the option-leak test now covers both :retry_methods and :retry_verbs.
+7. + test/HTTP/METHODS_test.rb
+8. ~ README.md: retry_methods documented as the option key, with retry_verbs noted as still accepted; the retry default is shown as HTTP::RETRY::METHODS.
+9. ~ HTTP::VERSION: /1.2.1/1.3.0/
+10. ~ CHANGELOG: + 1.3.0 entry
+
+## 20260610
 
 1.2.1: Split the request builders into their own files.
 
@@ -12,7 +29,7 @@ request_with_body and request_without_body, added in 1.2.0, each move into their
 4. ~ HTTP::VERSION: /1.2.0/1.2.1/
 5. ~ CHANGELOG: + 1.2.1 entry
 
-## 20260609
+## 20260610
 
 1.2.0: Extract request_without_body and request_with_body.
 
