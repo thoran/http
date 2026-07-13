@@ -1,5 +1,18 @@
 # CHANGELOG
 
+## 20260713
+
+1.3.1: Use Thoran Namespace for URL-encoding extensions.
+
+The String#url_encode and Hash#x_www_form_urlencode extensions reopened the core classes directly. Both now live in named modules under the Thoran:: namespace — Thoran::String::Urlencode and Thoran::Hash::XWwwFormUrlencode — mixed into String and Hash.
+
+1. + Thoran::String::Urlencode#urlencode
+2. - String#url_encode
+3. + Thoran::Hash::XWwwFormUrlencode#x_www_form_urlencode
+4. ~ Hash#x_www_form_urlencode: Requires the Thoran namespaced equivalent.
+5. ~ HTTP::VERSION: /1.3.0/1.3.1/
+6. ~ CHANGELOG: + 1.3.1 entry
+
 ## 20260610
 
 1.3.0: Rename VERBS to METHODS; VERBS retained as a deprecated alias.

@@ -1,10 +1,7 @@
 # Hash/x_www_form_urlencode.rb
 # Hash#x_www_form_urlencode
 
-require_relative '../String/url_encode'
+# 20260713
+# 0.2.0
 
-class Hash
-  def x_www_form_urlencode(joiner = '&')
-    inject([]){|a,e| a << "#{e.first.to_s.url_encode.gsub(/ /, '+')}=#{e.last.to_s.url_encode.gsub(/ /, '+')}" unless e.last.nil?; a}.join(joiner)
-  end
-end
+require 'Thoran/Hash/XWwwFormUrlencode/x_www_form_urlencode'
