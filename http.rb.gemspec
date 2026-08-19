@@ -24,14 +24,14 @@ Gem::Specification.new do |spec|
   spec.require_paths = ['lib']
 
   spec.files = [
-    'http.rb.gemspec',
+    Dir['lib/**/*.rb'],
+    Dir['test/**/*.rb'],
     'CHANGELOG',
     'Gemfile',
+    'http.rb.gemspec',
     'LICENSE',
     'Rakefile',
     'README.md',
-    Dir['lib/**/*.rb'],
-    Dir['test/**/*.rb'],
   ].flatten
 
   spec.development_dependencies = [

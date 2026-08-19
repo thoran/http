@@ -1,5 +1,13 @@
 # CHANGELOG
 
+## 20260819
+
+1.3.2: ~ http.rb.gemspec: spec.files reordered, the globs first.
+
+1. ~ http.rb.gemspec: spec.files reordered, the two Dir globs first and the loose files alphabetically after them, as moby and measurand have it. The globs are what the gem is and the rest is paperwork, so adding a file to the paperwork now never disturbs them. This gemspec had been pinned first with the globs last, which namo shared and impuri left at its 0.12.1. The same 35 files ship, in the same gem; only the order in the source changes.
+2. ~ HTTP::VERSION: /1.3.1/1.3.2/
+
+
 ## 20260713
 
 1.3.1: Use Thoran Namespace for URL-encoding extensions.
