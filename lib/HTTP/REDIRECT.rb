@@ -14,6 +14,20 @@ module HTTP
   end
   module_function :redirect?
 
+  # 307 and 308 keep the method.  303 makes it a GET, a HEAD excepted.  301 and 302 make
+  # only a POST a GET, which RFC 9110 allows for historical reasons, and keep the rest.
+  def redirect_method(code, request_method)
+    case code
+    when '303'
+      request_method == :head ? :head : :get
+    when '301', '302'
+      request_method == :post ? :get : request_method
+    else
+      request_method
+    end
+  end
+  module_function :redirect_method
+
   def same_origin?(a, b)
     [a.scheme, a.host, a.port] == [b.scheme, b.host, b.port]
   end

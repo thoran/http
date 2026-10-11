@@ -143,7 +143,7 @@ describe ".delete" do
     let(:redirect_uri){'http://redirected.com'}
 
     before do
-      stub_request(:get, redirect_uri).
+      stub_request(:delete, redirect_uri).
         to_return(status: 200, body: '', headers: {})
     end
 
@@ -157,7 +157,7 @@ describe ".delete" do
         response = HTTP.delete(request_uri)
         _(response.success?).must_equal(true)
         assert_requested(:delete, request_uri)
-        assert_requested(:get, redirect_uri)
+        assert_requested(:delete, redirect_uri)
       end
     end
 
@@ -171,7 +171,7 @@ describe ".delete" do
         response = HTTP.delete(request_uri)
         _(response.success?).must_equal(true)
         assert_requested(:delete, request_uri)
-        assert_requested(:get, redirect_uri)
+        assert_requested(:delete, redirect_uri)
       end
     end
   end
@@ -182,7 +182,7 @@ describe ".delete" do
     let(:redirect_uri){"http://example.com#{redirect_path}"}
 
     before do
-      stub_request(:get, redirect_uri).
+      stub_request(:delete, redirect_uri).
         to_return(status: 200, body: '', headers: {})
     end
 
@@ -195,7 +195,7 @@ describe ".delete" do
       it "resolves the relative redirect against the original URI" do
         response = HTTP.delete(request_uri)
         _(response.success?).must_equal(true)
-        assert_requested(:get, redirect_uri)
+        assert_requested(:delete, redirect_uri)
       end
     end
 
@@ -208,7 +208,7 @@ describe ".delete" do
       it "resolves the relative redirect against the original URI" do
         response = HTTP.delete(request_uri)
         _(response.success?).must_equal(true)
-        assert_requested(:get, redirect_uri)
+        assert_requested(:delete, redirect_uri)
       end
     end
   end
@@ -245,7 +245,7 @@ describe ".delete" do
       it "returns the redirect response without following it" do
         response = HTTP.delete(request_uri, {}, {}, {no_redirect: true})
         _(response.redirection?).must_equal(true)
-        assert_not_requested(:get, redirect_uri)
+        assert_not_requested(:delete, redirect_uri)
       end
     end
 
@@ -258,7 +258,7 @@ describe ".delete" do
       it "returns the redirect response without following it" do
         response = HTTP.delete(request_uri, {}, {}, {no_redirect: true})
         _(response.redirection?).must_equal(true)
-        assert_not_requested(:get, redirect_uri)
+        assert_not_requested(:delete, redirect_uri)
       end
     end
   end

@@ -143,7 +143,7 @@ describe ".trace" do
     let(:redirect_uri){'http://redirected.com'}
 
     before do
-      stub_request(:get, redirect_uri).
+      stub_request(:trace, redirect_uri).
         to_return(status: 200, body: '', headers: {})
     end
 
@@ -157,7 +157,7 @@ describe ".trace" do
         response = HTTP.trace(request_uri)
         _(response.success?).must_equal(true)
         assert_requested(:trace, request_uri)
-        assert_requested(:get, redirect_uri)
+        assert_requested(:trace, redirect_uri)
       end
     end
 
@@ -171,7 +171,7 @@ describe ".trace" do
         response = HTTP.trace(request_uri)
         _(response.success?).must_equal(true)
         assert_requested(:trace, request_uri)
-        assert_requested(:get, redirect_uri)
+        assert_requested(:trace, redirect_uri)
       end
     end
   end
@@ -182,7 +182,7 @@ describe ".trace" do
     let(:redirect_uri){"http://example.com#{redirect_path}"}
 
     before do
-      stub_request(:get, redirect_uri).
+      stub_request(:trace, redirect_uri).
         to_return(status: 200, body: '', headers: {})
     end
 
@@ -195,7 +195,7 @@ describe ".trace" do
       it "resolves the relative redirect against the original URI" do
         response = HTTP.trace(request_uri)
         _(response.success?).must_equal(true)
-        assert_requested(:get, redirect_uri)
+        assert_requested(:trace, redirect_uri)
       end
     end
 
@@ -208,7 +208,7 @@ describe ".trace" do
       it "resolves the relative redirect against the original URI" do
         response = HTTP.trace(request_uri)
         _(response.success?).must_equal(true)
-        assert_requested(:get, redirect_uri)
+        assert_requested(:trace, redirect_uri)
       end
     end
   end
@@ -226,7 +226,7 @@ describe ".trace" do
       it "returns the redirect response without following it" do
         response = HTTP.trace(request_uri, {}, {}, {no_redirect: true})
         _(response.redirection?).must_equal(true)
-        assert_not_requested(:get, redirect_uri)
+        assert_not_requested(:trace, redirect_uri)
       end
     end
 
@@ -239,7 +239,7 @@ describe ".trace" do
       it "returns the redirect response without following it" do
         response = HTTP.trace(request_uri, {}, {}, {no_redirect: true})
         _(response.redirection?).must_equal(true)
-        assert_not_requested(:get, redirect_uri)
+        assert_not_requested(:trace, redirect_uri)
       end
     end
   end

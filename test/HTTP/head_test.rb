@@ -93,7 +93,7 @@ describe ".head" do
     before do
       stub_request(:head, request_uri).
         to_return(status: 301, headers: {'location' => redirect_uri})
-      stub_request(:get, redirect_uri).
+      stub_request(:head, redirect_uri).
         to_return(status: 200, body: '', headers: {})
     end
 
@@ -101,7 +101,7 @@ describe ".head" do
       response = HTTP.head(request_uri)
       _(response.success?).must_equal(true)
       assert_requested(:head, request_uri)
-      assert_requested(:get, redirect_uri)
+      assert_requested(:head, redirect_uri)
     end
   end
 

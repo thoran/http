@@ -97,6 +97,19 @@ When both are supplied, the options hash wins.
 
 301, 302, 303, 307, and 308 responses with a `Location` are followed. Other 3xx responses, such as 300 and 304, are returned as they are.
 
+The method is kept as RFC 9110 has it. 307 and 308 repeat the request as it was. 303 makes it a GET, except that a HEAD stays a HEAD. 301 and 302 make a POST a GET, as browsers do, and keep every other method:
+
+| Method | 301, 302 | 303 | 307, 308 |
+| --- | --- | --- | --- |
+| GET | GET | GET | GET |
+| HEAD | HEAD | HEAD | HEAD |
+| POST | GET, without its body | GET, without its body | POST, with its body |
+| PUT, PATCH | kept, with its body | GET, without its body | kept, with its body |
+| DELETE, OPTIONS, TRACE | kept | GET | kept |
+| Any other, such as PROPFIND | kept | GET | kept |
+
+A body repeated keeps its `Content-Type`, form data's included. Where the method changes, `Content-Type` is left behind with the body.
+
 Redirects are followed with the headers they were given, except that `Authorization` and `Cookie`, and the `username:` and `password:` options, go no further than the origin (scheme, host, and port) they were given to. Where a redirect makes the request a GET, `Content-Type` is left behind, there being no body for it to describe.
 
 ### Preventing redirections

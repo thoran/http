@@ -2,5 +2,5 @@
 # HTTP::VERSION
 
 module HTTP
-  VERSION = '1.3.11'
+  VERSION = '1.4.0'
 end

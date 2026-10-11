@@ -2,6 +2,21 @@
 
 ## 20261011
 
+1.4.0: The method on a redirect is as RFC 9110 has it: a DELETE redirected by a 301 or 302 is now a DELETE, a PUT a PUT, and a HEAD a HEAD.
+
+Every 301, 302, and 303 was followed with a GET, whatever the method. RFC 9110 allows a 301 or 302 to make a POST a GET, for historical reasons, and nothing else: a PUT, a PATCH, a DELETE, an OPTIONS, or a TRACE was turned into a GET, which did something other than was asked, and a HEAD was too, which fetched the body a HEAD is made to avoid. A 303 does make the method a GET, except for a HEAD, which stays one. Those which were made a GET will now be repeated as themselves, a DELETE included, which is what the specification asks but which differs from what was done before, so anyone whose redirected DELETE, PUT, or PATCH was quietly becoming a GET will find it isn't.
+
+1. ~ lib/HTTP/REDIRECT.rb: + HTTP.redirect_method: 307 and 308 keep the method; 303 makes it a GET, a HEAD excepted; 301 and 302 make a POST a GET and keep the rest.
+2. ~ HTTP.request: a redirect is made with redirect_method, through request_with_body where the request had a body to repeat and request_without_body otherwise, rather than through the named method. Content-Type is left behind only where the method changes, and a body repeated keeps it through body_headers, as 1.3.11 has a 307 or 308 do, which matters the more now that a PUT or PATCH redirected by a 301 or 302 is repeated with its body rather than made a GET.
+3. ~ HTTP.request: a method without a named helper, such as PROPFIND made with request_without_body, is followed. A 307 or 308 was followed with send(request_method), which raised NoMethodError for one.
+4. ~ test/HTTP/{delete,head,options,patch,put,trace}_test.rb: a 301 or 302 is expected to be followed with the method itself rather than with GET.
+5. ~ test/HTTP/REDIRECT_test.rb: + the method through each of 301, 302, 303, 307, and 308: POST, PUT with its body, DELETE, HEAD, and PROPFIND. The ones which keep a method other than GET or POST fail against 1.3.11, and PROPFIND by 307 and 308 raised. The PUT examples assert its Content-Type as well as its body.
+6. ~ README.md: + how the method is kept, under Redirections, with a table of each method through each redirect.
+7. ~ HTTP::VERSION: /1.3.11/1.4.0/
+
+
+## 20261011
+
 1.3.11: A repeated body keeps the Content-Type it was sent with.
 
 A 307 or 308 repeats the request with its body, and form data, `HTTP.post(uri, {a: 1})`, was repeated without its Content-Type: `form_data=` sets application/x-www-form-urlencoded upon the request object rather than among the headers given, and the request repeated is a new one, made from those headers. So the server was sent `a=1` and no type to read it by. A body sent with a Content-Type among its headers, JSON or XML, kept it, which is why it went unnoticed. As old as the 307 handling: 1.3.2 does the same.

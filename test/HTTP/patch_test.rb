@@ -286,7 +286,7 @@ describe ".patch" do
     let(:redirect_uri){'http://redirected.com'}
 
     before do
-      stub_request(:get, redirect_uri).
+      stub_request(:patch, redirect_uri).
         to_return(status: 200, body: '', headers: {})
     end
 
@@ -296,11 +296,11 @@ describe ".patch" do
           to_return(status: 301, headers: {'location' => redirect_uri})
       end
 
-      it "follows the redirect with GET" do
+      it "follows the redirect with PATCH" do
         response = HTTP.patch(request_uri)
         _(response.success?).must_equal(true)
         assert_requested(:patch, request_uri)
-        assert_requested(:get, redirect_uri)
+        assert_requested(:patch, redirect_uri)
       end
     end
 
@@ -310,11 +310,11 @@ describe ".patch" do
           to_return(status: 302, headers: {'location' => redirect_uri})
       end
 
-      it "follows the redirect with GET" do
+      it "follows the redirect with PATCH" do
         response = HTTP.patch(request_uri)
         _(response.success?).must_equal(true)
         assert_requested(:patch, request_uri)
-        assert_requested(:get, redirect_uri)
+        assert_requested(:patch, redirect_uri)
       end
     end
   end
@@ -325,7 +325,7 @@ describe ".patch" do
     let(:redirect_uri){"http://example.com#{redirect_path}"}
 
     before do
-      stub_request(:get, redirect_uri).
+      stub_request(:patch, redirect_uri).
         to_return(status: 200, body: '', headers: {})
     end
 
@@ -338,7 +338,7 @@ describe ".patch" do
       it "resolves the relative redirect against the original URI" do
         response = HTTP.patch(request_uri)
         _(response.success?).must_equal(true)
-        assert_requested(:get, redirect_uri)
+        assert_requested(:patch, redirect_uri)
       end
     end
 
@@ -351,7 +351,7 @@ describe ".patch" do
       it "resolves the relative redirect against the original URI" do
         response = HTTP.patch(request_uri)
         _(response.success?).must_equal(true)
-        assert_requested(:get, redirect_uri)
+        assert_requested(:patch, redirect_uri)
       end
     end
   end
@@ -388,7 +388,7 @@ describe ".patch" do
       it "returns the redirect response without following it" do
         response = HTTP.patch(request_uri, {}, {}, {no_redirect: true})
         _(response.redirection?).must_equal(true)
-        assert_not_requested(:get, redirect_uri)
+        assert_not_requested(:patch, redirect_uri)
       end
     end
 
@@ -401,7 +401,7 @@ describe ".patch" do
       it "returns the redirect response without following it" do
         response = HTTP.patch(request_uri, {}, {}, {no_redirect: true})
         _(response.redirection?).must_equal(true)
-        assert_not_requested(:get, redirect_uri)
+        assert_not_requested(:patch, redirect_uri)
       end
     end
   end

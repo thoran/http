@@ -43,11 +43,13 @@ module HTTP
     if !no_redirect && redirect?(response)
       redirect_uri = uri.merge(response['location'])
       onward_options = redirect_options(given_options, uri, redirect_uri)
-      if response.code =~ /^30[78]$/
-        data = METHODS::WITH_BODY.include?(request_method) ? request_object.body : {}
-        return send(request_method, redirect_uri.to_s, data, redirect_headers(body_headers(headers, request_object), uri, redirect_uri), onward_options, &block)
+      redirect_method = redirect_method(response.code, request_method)
+      if redirect_method != request_method
+        return request_without_body(redirect_method, redirect_uri, {}, redirect_headers(headers, uri, redirect_uri, drop_content_type: true), onward_options, &block)
+      elsif request_object.body
+        return request_with_body(request_method, redirect_uri, request_object.body, redirect_headers(body_headers(headers, request_object), uri, redirect_uri), onward_options, &block)
       else
-        return get(redirect_uri.to_s, {}, redirect_headers(headers, uri, redirect_uri, drop_content_type: true), onward_options, &block)
+        return request_without_body(request_method, redirect_uri, {}, redirect_headers(headers, uri, redirect_uri), onward_options, &block)
       end
     end
     if block_given?
