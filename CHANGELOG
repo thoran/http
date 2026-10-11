@@ -2,6 +2,19 @@
 
 ## 20261011
 
+1.3.5: Non-ASCII is URL-encoded in full, and without a warning.
+
+A query argument holding a multibyte character was encoded one byte per character, so only the first byte of each went out: 'Älaskår' became '%C3lask%C3r' where it should have been '%C3%84lask%C3%A5r', and a server decoding it got invalid UTF-8. The warning this was first noticed by, "historical binary regexp match /.../n against UTF-8 string", came from the same line and is only a warning, but dropping the /n alone would have left the bytes truncated, which is what kept the warning from seeming to matter.
+
+1. ~ Thoran::String::Urlencode#urlencode: /$1.size/$1.bytesize/, so that each byte of a character is encoded rather than the first only.
+2. ~ Thoran::String::Urlencode#urlencode: - /n flag. Matched against a UTF-8 string, a binary regexp warns on current Ruby, and the match is the same without it: a run of non-ASCII characters is still matched whole and then unpacked byte by byte, and a binary string is still matched byte-wise.
+3. ~ Thoran/String/Urlencode/urlencode.rb: /0.4.0/0.4.1/ in the file's own header.
+4. + test/Thoran/String/Urlencode/urlencode_test.rb: unreserved and reserved characters, a space, two and three byte characters, a binary string, the absence of a warning, and the url_encode alias. The multibyte, warning, and alias examples fail against 1.3.4.
+5. ~ HTTP::VERSION: /1.3.4/1.3.5/
+
+
+## 20261011
+
 1.3.4: ~ LICENSE: /2026/2009-2026/
 
 1. ~ LICENSE: the copyright years run from 2009, which is when the README dates the library from. The first commit, 2015, is when its history was imported rather than when it began, so the usual rule of taking the year of the first commit would understate it here.
