@@ -112,6 +112,14 @@ A body repeated keeps its `Content-Type`, form data's included. Where the method
 
 Redirects are followed with the headers they were given, except that `Authorization` and `Cookie`, and the `username:` and `password:` options, go no further than the origin (scheme, host, and port) they were given to. Where a redirect makes the request a GET, `Content-Type` is left behind, there being no body for it to describe.
 
+The response's `uri` is the URI it came from, which, where redirects were followed, is where they ended:
+
+```ruby
+response = HTTP.get('http://example.com/moved')
+response.uri
+# => #<URI::HTTP http://example.com/new_location>
+```
+
 ### Preventing redirections
 
 ```ruby
@@ -129,6 +137,7 @@ HTTP.get('http://example.com', {}, {}, {max_redirects: 5})
 begin
   HTTP.get('http://example.com/loop')
 rescue HTTP::TooManyRedirects => e
+  e.response.uri
   e.response['location']
 end
 ```

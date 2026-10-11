@@ -2,6 +2,20 @@
 
 ## 20261011
 
+1.6.0: The response's uri is the URI it came from, which, where redirects were followed, is where they ended.
+
+Nothing recorded where a response had come from: the request objects are made from a path rather than a URI, so Net::HTTP left response.uri nil, and a caller whose request was redirected had no way of knowing where to. A spider resolving the links on a page against the page's address needs it, as does anything noticing that it has been sent to a login page.
+
+1. ~ lib/HTTP/REDIRECT.rb: + HTTP.response_uri, which leaves out any credentials embedded in the URI, a response being something which is passed around and printed.
+2. ~ HTTP.request: response.uri is set to response_uri of the URI requested, so that after redirects it is the last of them.
+3. ~ HTTP::TooManyRedirects: the message names the URI of the redirect not followed as well as its Location.
+4. ~ test/HTTP/REDIRECT_test.rb: + the final URI without a redirect, after one, with no_redirect, and without embedded credentials; the URI of the redirect TooManyRedirects carries. All fail against 1.5.0.
+5. ~ README.md: + the response's uri, under Redirections, and in the Limiting redirections example.
+6. ~ HTTP::VERSION: /1.5.0/1.6.0/
+
+
+## 20261011
+
 1.5.0: + max_redirects; + HTTP::TooManyRedirects.
 
 Redirects were followed without limit, each by a call nested in the last, so a redirect loop ran until SystemStackError, which against a local server came after 2,179 requests. Now no more than max_redirects are followed, 20 unless given, which is where browsers stop, and one more raises HTTP::TooManyRedirects.

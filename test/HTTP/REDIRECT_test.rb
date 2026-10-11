@@ -7,6 +7,29 @@ describe "redirect behaviour" do
   let(:same_origin_uri){'http://example.com/elsewhere'}
   let(:other_origin_uri){'http://redirected.com/path'}
 
+  describe "the final URI" do
+    it "is the requested URI when there is no redirect" do
+      stub_request(:get, uri).to_return(status: 200)
+      _(HTTP.get(uri).uri.to_s).must_equal(uri)
+    end
+
+    it "is the URI redirected to when a redirect is followed" do
+      stub_request(:get, uri).to_return(status: 302, headers: {'location' => other_origin_uri})
+      stub_request(:get, other_origin_uri).to_return(status: 200)
+      _(HTTP.get(uri).uri.to_s).must_equal(other_origin_uri)
+    end
+
+    it "is the URI which redirected when no_redirect is set" do
+      stub_request(:get, uri).to_return(status: 302, headers: {'location' => other_origin_uri})
+      _(HTTP.get(uri, {}, {}, {no_redirect: true}).uri.to_s).must_equal(uri)
+    end
+
+    it "carries no embedded credentials" do
+      stub_request(:get, uri).with(basic_auth: ['alice', 'secret']).to_return(status: 200)
+      _(HTTP.get('http://alice:secret@example.com/path').uri.to_s).must_equal(uri)
+    end
+  end
+
   describe "headers" do
     %w{301 302 303 307 308}.each do |code|
       it "are carried through a #{code}" do
@@ -230,6 +253,7 @@ describe "redirect behaviour" do
     it "raises TooManyRedirects, with the redirect not followed, when there are more" do
       error = _(->{HTTP.get('http://example.com/0', {}, {}, {max_redirects: 1})}).must_raise(HTTP::TooManyRedirects)
       _(error.response['location']).must_equal('/2')
+      _(error.response.uri.to_s).must_equal('http://example.com/1')
       assert_not_requested(:get, 'http://example.com/2')
     end
 

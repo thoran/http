@@ -13,7 +13,7 @@ module HTTP
 
     def initialize(response)
       @response = response
-      super("Too many redirects: #{response.code} to #{response['location']}")
+      super("Too many redirects: #{response.code} from #{response.uri} to #{response['location']}")
     end
   end
 
@@ -68,4 +68,14 @@ module HTTP
     options.reject{|k, v| %i{username password}.include?(k)}
   end
   module_function :redirect_options
+
+  # Embedded credentials are left out, a response being something which is passed
+  # around and printed.  URI#userinfo= ignores nil, whereas URI#user= takes the password
+  # with it.
+  def response_uri(uri)
+    uri = uri.dup
+    uri.user = nil if uri.user
+    uri
+  end
+  module_function :response_uri
 end

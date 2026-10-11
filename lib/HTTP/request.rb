@@ -41,6 +41,7 @@ module HTTP
         http.request(request_object)
       end
     )
+    response.uri = response_uri(uri)
     if !no_redirect && redirect?(response)
       raise TooManyRedirects.new(response) if max_redirects < 1
       redirect_uri = uri.merge(response['location'])
