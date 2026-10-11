@@ -1,5 +1,13 @@
 # CHANGELOG
 
+## 20261011
+
+1.3.4: ~ LICENSE: /2026/2009-2026/
+
+1. ~ LICENSE: the copyright years run from 2009, which is when the README dates the library from. The first commit, 2015, is when its history was imported rather than when it began, so the usual rule of taking the year of the first commit would understate it here.
+2. ~ HTTP::VERSION: /1.3.3/1.3.4/
+
+
 ## 20260910
 
 1.3.3: ~ lib/HTTP.rb: + require 'HTTP/VERSION'; + test/HTTP/VERSION_test.rb
