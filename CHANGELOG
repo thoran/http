@@ -2,6 +2,18 @@
 
 ## 20261011
 
+1.3.11: A repeated body keeps the Content-Type it was sent with.
+
+A 307 or 308 repeats the request with its body, and form data, `HTTP.post(uri, {a: 1})`, was repeated without its Content-Type: `form_data=` sets application/x-www-form-urlencoded upon the request object rather than among the headers given, and the request repeated is a new one, made from those headers. So the server was sent `a=1` and no type to read it by. A body sent with a Content-Type among its headers, JSON or XML, kept it, which is why it went unnoticed. As old as the 307 handling: 1.3.2 does the same.
+
+1. ~ lib/HTTP/REDIRECT.rb: + HTTP.body_headers, which adds the request object's Content-Type to the headers where they carry none of their own.
+2. ~ HTTP.request: a 307 or 308 is followed with body_headers, and then redirect_headers, rather than redirect_headers alone.
+3. ~ test/HTTP/REDIRECT_test.rb: + form data's Content-Type kept through a 307 and through a 308, both failing against 1.3.10, and a Content-Type given among the headers kept in preference to it, which passes either way, being a guard.
+4. ~ HTTP::VERSION: /1.3.10/1.3.11/
+
+
+## 20261011
+
 1.3.10: A block is yielded to once, with the response.
 
 With a block, a followed redirect yielded the final response to it, and then yielded again whatever the block had returned, since that is what the redirected request returned and it was taken for the response: a block which returned an Array was handed that Array. With no_redirect set, the block was yielded the redirect and the redirect was then followed regardless, the branch yielding without returning, so the block was yielded to three times and a request was made which had been asked not to be.

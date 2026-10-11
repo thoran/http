@@ -129,4 +129,20 @@ describe "redirect behaviour" do
       assert_not_requested(:get, other_origin_uri)
     end
   end
+
+  describe "a repeated body" do
+    %w{307 308}.each do |code|
+      it "keeps the Content-Type form data was sent with via #{code}" do
+        stub_request(:post, uri).with(headers: {'Content-Type' => 'application/x-www-form-urlencoded'}).to_return(status: code.to_i, headers: {'location' => same_origin_uri})
+        stub_request(:post, same_origin_uri).with(body: 'a=1', headers: {'Content-Type' => 'application/x-www-form-urlencoded'}).to_return(status: 200)
+        _(HTTP.post(uri, {a: 1}).success?).must_equal(true)
+      end
+    end
+
+    it "keeps the Content-Type it was given rather than that of form data" do
+      stub_request(:post, uri).to_return(status: 307, headers: {'location' => same_origin_uri})
+      stub_request(:post, same_origin_uri).with(body: '{"a":1}', headers: {'Content-Type' => 'application/json'}).to_return(status: 200)
+      _(HTTP.post(uri, {a: 1}, {'Content-Type' => 'application/json'}).success?).must_equal(true)
+    end
+  end
 end

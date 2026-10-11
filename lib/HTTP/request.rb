@@ -45,7 +45,7 @@ module HTTP
       onward_options = redirect_options(given_options, uri, redirect_uri)
       if response.code =~ /^30[78]$/
         data = METHODS::WITH_BODY.include?(request_method) ? request_object.body : {}
-        return send(request_method, redirect_uri.to_s, data, redirect_headers(headers, uri, redirect_uri), onward_options, &block)
+        return send(request_method, redirect_uri.to_s, data, redirect_headers(body_headers(headers, request_object), uri, redirect_uri), onward_options, &block)
       else
         return get(redirect_uri.to_s, {}, redirect_headers(headers, uri, redirect_uri, drop_content_type: true), onward_options, &block)
       end

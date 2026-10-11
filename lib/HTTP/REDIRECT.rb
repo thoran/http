@@ -29,6 +29,15 @@ module HTTP
   end
   module_function :redirect_headers
 
+  # A body repeated carries the type it was sent with, which form data sets upon the
+  # request object rather than among the headers given.
+  def body_headers(headers, request_object)
+    return headers unless request_object['content-type']
+    return headers if headers.any?{|k, v| k.downcase == 'content-type'}
+    headers.merge('Content-Type' => request_object['content-type'])
+  end
+  module_function :body_headers
+
   def redirect_options(options, from_uri, to_uri)
     return options if same_origin?(from_uri, to_uri)
     options.reject{|k, v| %i{username password}.include?(k)}
