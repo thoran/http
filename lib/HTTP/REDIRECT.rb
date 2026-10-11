@@ -17,4 +17,10 @@ module HTTP
     headers.reject{|k, v| REDIRECT::CREDENTIAL_HEADERS.include?(k.downcase)}
   end
   module_function :redirect_headers
+
+  def redirect_options(options, from_uri, to_uri)
+    return options if same_origin?(from_uri, to_uri)
+    options.reject{|k, v| %i{username password}.include?(k)}
+  end
+  module_function :redirect_options
 end

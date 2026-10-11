@@ -37,4 +37,46 @@ describe "redirect behaviour" do
       assert_requested(:get, 'http://example.com:8080/path'){|request| !request.headers.key?('Cookie')}
     end
   end
+
+  describe "the options hash" do
+    it "is not altered by a call" do
+      stub_request(:get, uri).to_return(status: 302, headers: {'location' => same_origin_uri})
+      stub_request(:get, same_origin_uri).to_return(status: 200)
+      options = {no_redirect: false, username: 'alice', password: 'secret', retries: 1}
+      HTTP.get(uri, {}, {}, options)
+      _(options).must_equal({no_redirect: false, username: 'alice', password: 'secret', retries: 1})
+    end
+
+    it "keeps no_redirect for a second call" do
+      stub_request(:get, uri).to_return(status: 302, headers: {'location' => other_origin_uri})
+      options = {no_redirect: true}
+      HTTP.get(uri, {}, {}, options)
+      _(HTTP.get(uri, {}, {}, options).redirection?).must_equal(true)
+      assert_not_requested(:get, other_origin_uri)
+    end
+
+    it "keeps retrying after a redirect" do
+      HTTP::RETRY.stub(:sleep, nil) do
+        stub_request(:get, uri).to_return(status: 302, headers: {'location' => same_origin_uri})
+        stub_request(:get, same_origin_uri).to_return(status: 503).then.to_return(status: 200)
+        _(HTTP.get(uri, {}, {}, {retries: 1}).success?).must_equal(true)
+        assert_requested(:get, same_origin_uri, times: 2)
+      end
+    end
+  end
+
+  describe "basic authentication options" do
+    it "are kept for the same origin" do
+      stub_request(:get, uri).with(basic_auth: ['alice', 'secret']).to_return(status: 302, headers: {'location' => same_origin_uri})
+      stub_request(:get, same_origin_uri).with(basic_auth: ['alice', 'secret']).to_return(status: 200)
+      _(HTTP.get(uri, {}, {}, {username: 'alice', password: 'secret'}).success?).must_equal(true)
+    end
+
+    it "are dropped for another origin" do
+      stub_request(:get, uri).with(basic_auth: ['alice', 'secret']).to_return(status: 307, headers: {'location' => other_origin_uri})
+      stub_request(:get, other_origin_uri).to_return(status: 200)
+      HTTP.get(uri, {}, {}, {username: 'alice', password: 'secret'})
+      assert_requested(:get, other_origin_uri){|request| !request.headers.key?('Authorization')}
+    end
+  end
 end

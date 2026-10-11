@@ -16,6 +16,8 @@ module HTTP
   def request(uri, request_object, headers = {}, options = {}, &block)
     uri = uri.is_a?(URI) ? uri : URI.parse(uri)
     http = Net::HTTP.new(uri.host, uri.port)
+    given_options = options
+    options = options.dup
     no_redirect = options.delete(:no_redirect)
     username = options.delete(:username)
     password = options.delete(:password)
@@ -45,11 +47,12 @@ module HTTP
         return response
       end
       redirect_uri = uri.merge(response['location'])
+      onward_options = redirect_options(given_options, uri, redirect_uri)
       if response.code =~ /^30[78]$/
         data = METHODS::WITH_BODY.include?(request_method) ? request_object.body : {}
-        response = send(request_method, redirect_uri.to_s, data, redirect_headers(headers, uri, redirect_uri), options, &block)
+        response = send(request_method, redirect_uri.to_s, data, redirect_headers(headers, uri, redirect_uri), onward_options, &block)
       else
-        response = get(redirect_uri.to_s, {}, {}, options, &block)
+        response = get(redirect_uri.to_s, {}, {}, onward_options, &block)
       end
     end
     if block_given?
