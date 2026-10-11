@@ -9,6 +9,7 @@ require_relative '../Net/HTTP/set_options'
 require_relative '../Net/HTTPRequest/set_headers'
 require_relative '../Net/HTTPResponse/StatusPredicates'
 require_relative '../URI/Generic/use_sslQ'
+require_relative './REDIRECT'
 require_relative './RETRY'
 
 module HTTP
@@ -46,7 +47,7 @@ module HTTP
       redirect_uri = uri.merge(response['location'])
       if response.code =~ /^30[78]$/
         data = METHODS::WITH_BODY.include?(request_method) ? request_object.body : {}
-        response = send(request_method, redirect_uri.to_s, data, headers, options, &block)
+        response = send(request_method, redirect_uri.to_s, data, redirect_headers(headers, uri, redirect_uri), options, &block)
       else
         response = get(redirect_uri.to_s, {}, {}, options, &block)
       end
