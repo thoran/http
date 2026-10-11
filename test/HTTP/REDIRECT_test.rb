@@ -111,4 +111,22 @@ describe "redirect behaviour" do
       _(HTTP.get(uri).code).must_equal('302')
     end
   end
+
+  describe "with a block" do
+    it "yields once when a redirect is followed" do
+      stub_request(:get, uri).to_return(status: 302, headers: {'location' => other_origin_uri})
+      stub_request(:get, other_origin_uri).to_return(status: 200)
+      yielded = []
+      HTTP.get(uri){|response| yielded << response.code}
+      _(yielded).must_equal(['200'])
+    end
+
+    it "yields once, with the redirect, when no_redirect is set" do
+      stub_request(:get, uri).to_return(status: 302, headers: {'location' => other_origin_uri})
+      yielded = []
+      HTTP.get(uri, {}, {}, {no_redirect: true}){|response| yielded << response.code}
+      _(yielded).must_equal(['302'])
+      assert_not_requested(:get, other_origin_uri)
+    end
+  end
 end

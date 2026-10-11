@@ -40,19 +40,14 @@ module HTTP
         http.request(request_object)
       end
     )
-    if redirect?(response)
-      if block_given? && no_redirect
-        yield response
-      elsif no_redirect
-        return response
-      end
+    if !no_redirect && redirect?(response)
       redirect_uri = uri.merge(response['location'])
       onward_options = redirect_options(given_options, uri, redirect_uri)
       if response.code =~ /^30[78]$/
         data = METHODS::WITH_BODY.include?(request_method) ? request_object.body : {}
-        response = send(request_method, redirect_uri.to_s, data, redirect_headers(headers, uri, redirect_uri), onward_options, &block)
+        return send(request_method, redirect_uri.to_s, data, redirect_headers(headers, uri, redirect_uri), onward_options, &block)
       else
-        response = get(redirect_uri.to_s, {}, redirect_headers(headers, uri, redirect_uri, drop_content_type: true), onward_options, &block)
+        return get(redirect_uri.to_s, {}, redirect_headers(headers, uri, redirect_uri, drop_content_type: true), onward_options, &block)
       end
     end
     if block_given?

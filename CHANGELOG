@@ -2,6 +2,18 @@
 
 ## 20261011
 
+1.3.10: A block is yielded to once, with the response.
+
+With a block, a followed redirect yielded the final response to it, and then yielded again whatever the block had returned, since that is what the redirected request returned and it was taken for the response: a block which returned an Array was handed that Array. With no_redirect set, the block was yielded the redirect and the redirect was then followed regardless, the branch yielding without returning, so the block was yielded to three times and a request was made which had been asked not to be.
+
+1. ~ HTTP.request: a followed redirect returns what the redirected request returns, which has already been yielded where there is a block, rather than yielding it again.
+2. ~ HTTP.request: no_redirect is a condition of following rather than a branch of its own, so that the redirect is yielded or returned as any other response is, and not followed.
+3. ~ test/HTTP/REDIRECT_test.rb: + one yield with the final response when a redirect is followed, and one with the redirect when no_redirect is set. Both fail against 1.3.9.
+4. ~ HTTP::VERSION: /1.3.9/1.3.10/
+
+
+## 20261011
+
 1.3.9: Only a 301, 302, 303, 307, or 308 with a Location is followed.
 
 Any 3xx was taken for a redirect. A 304 Not Modified carries no Location, so URI#merge was handed nil and raised ArgumentError, as did any 3xx without one. And a 300 Multiple Choices was followed to whatever its Location named, though it is a list of choices for the caller, the Location being only the server's preference among them. These are answers rather than redirects, and are now returned as they are.
