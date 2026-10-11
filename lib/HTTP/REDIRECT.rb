@@ -5,6 +5,16 @@ module HTTP
   module REDIRECT
     CODES = %w{301 302 303 307 308}.freeze
     CREDENTIAL_HEADERS = %w{authorization cookie}.freeze
+    MAX = 20
+  end
+
+  class TooManyRedirects < StandardError
+    attr_reader :response
+
+    def initialize(response)
+      @response = response
+      super("Too many redirects: #{response.code} to #{response['location']}")
+    end
   end
 
   # A 300 or a 304 is an answer rather than somewhere else to go, and a 3xx without a
@@ -52,7 +62,8 @@ module HTTP
   end
   module_function :body_headers
 
-  def redirect_options(options, from_uri, to_uri)
+  def redirect_options(options, from_uri, to_uri, max_redirects)
+    options = options.merge(max_redirects: max_redirects - 1)
     return options if same_origin?(from_uri, to_uri)
     options.reject{|k, v| %i{username password}.include?(k)}
   end

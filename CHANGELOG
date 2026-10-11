@@ -2,6 +2,20 @@
 
 ## 20261011
 
+1.5.0: + max_redirects; + HTTP::TooManyRedirects.
+
+Redirects were followed without limit, each by a call nested in the last, so a redirect loop ran until SystemStackError, which against a local server came after 2,179 requests. Now no more than max_redirects are followed, 20 unless given, which is where browsers stop, and one more raises HTTP::TooManyRedirects.
+
+1. ~ lib/HTTP/REDIRECT.rb: + HTTP::REDIRECT::MAX (20); + HTTP::TooManyRedirects, whose response is the redirect which was not followed.
+2. ~ HTTP.redirect_options: + max_redirects, which the redirect is made with one fewer of.
+3. ~ HTTP.request: + max_redirects option, which defaults to HTTP::REDIRECT::MAX and is not passed through to Net::HTTP; HTTP::TooManyRedirects is raised at a redirect when none are left. max_redirects: 0 raises at the first redirect, where no_redirect: true returns it, and no_redirect wins where both are given.
+4. ~ test/HTTP/REDIRECT_test.rb: + as many redirects followed as allowed, TooManyRedirects for one more with the redirect not followed, 0 raising at the first, no_redirect winning over it, a loop stopped at the default, and the option not passed through to Net::HTTP; max_redirects among the options left as they were. All fail against 1.4.0, which passed max_redirects through to Net::HTTP, where there is no max_redirects= for it.
+5. ~ README.md: + Limiting redirections; + max_redirects among the options which aren't passed through to Net::HTTP.
+6. ~ HTTP::VERSION: /1.4.0/1.5.0/
+
+
+## 20261011
+
 1.4.0: The method on a redirect is as RFC 9110 has it: a DELETE redirected by a 301 or 302 is now a DELETE, a PUT a PUT, and a HEAD a HEAD.
 
 Every 301, 302, and 303 was followed with a GET, whatever the method. RFC 9110 allows a 301 or 302 to make a POST a GET, for historical reasons, and nothing else: a PUT, a PATCH, a DELETE, an OPTIONS, or a TRACE was turned into a GET, which did something other than was asked, and a HEAD was too, which fetched the body a HEAD is made to avoid. A 303 does make the method a GET, except for a HEAD, which stays one. Those which were made a GET will now be repeated as themselves, a DELETE included, which is what the specification asks but which differs from what was done before, so anyone whose redirected DELETE, PUT, or PATCH was quietly becoming a GET will find it isn't.

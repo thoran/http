@@ -19,6 +19,7 @@ module HTTP
     given_options = options
     options = options.dup
     no_redirect = options.delete(:no_redirect)
+    max_redirects = options.delete(:max_redirects) || REDIRECT::MAX
     username = options.delete(:username)
     password = options.delete(:password)
     config = retry_config(options)
@@ -41,8 +42,9 @@ module HTTP
       end
     )
     if !no_redirect && redirect?(response)
+      raise TooManyRedirects.new(response) if max_redirects < 1
       redirect_uri = uri.merge(response['location'])
-      onward_options = redirect_options(given_options, uri, redirect_uri)
+      onward_options = redirect_options(given_options, uri, redirect_uri, max_redirects)
       redirect_method = redirect_method(response.code, request_method)
       if redirect_method != request_method
         return request_without_body(redirect_method, redirect_uri, {}, redirect_headers(headers, uri, redirect_uri, drop_content_type: true), onward_options, &block)

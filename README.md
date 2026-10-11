@@ -119,6 +119,22 @@ HTTP.get('http://example.com', {}, {}, {no_redirect: true})
 # => #<Net::HTTPResponse @code=3xx>
 ```
 
+### Limiting redirections
+
+Up to 20 redirects are followed by default. One more raises `HTTP::TooManyRedirects`, whose `response` is the redirect which wasn't followed:
+
+```ruby
+HTTP.get('http://example.com', {}, {}, {max_redirects: 5})
+
+begin
+  HTTP.get('http://example.com/loop')
+rescue HTTP::TooManyRedirects => e
+  e.response['location']
+end
+```
+
+`max_redirects: 0` raises at the first redirect, whereas `no_redirect: true` returns it.
+
 ### Retries
 
 Retries are disabled by default. Enable them by passing `retries:` in the options hash.
@@ -216,11 +232,15 @@ HTTP.request_with_body(:propfind, 'http://example.com/path', xml, {'Content-Type
 Both take the same `(method, uri, args_or_data, headers, options, &block)` arguments as the named methods, with the method as the first argument, and the named methods delegate to them. For full control over the request object, drop down to `HTTP.request(uri, request_object, headers, options, &block)`.
 
 ## Allowed values for the options hash
-#### (These pass through to Net::HTTP, except for `no_redirect`, `username`, and `password`.)
+#### (These pass through to Net::HTTP, except for `no_redirect`, `max_redirects`, `username`, and `password`.)
 
 ```Ruby
 no_redirect
     # Prevents redirection if a 3xx response is encountered.
+
+max_redirects
+    # The most redirects followed before HTTP::TooManyRedirects is raised.
+    # Defaults to 20.
 
 username
     # Username for HTTP basic authentication. Takes precedence over any

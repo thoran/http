@@ -59,9 +59,9 @@ describe "redirect behaviour" do
     it "is not altered by a call" do
       stub_request(:get, uri).to_return(status: 302, headers: {'location' => same_origin_uri})
       stub_request(:get, same_origin_uri).to_return(status: 200)
-      options = {no_redirect: false, username: 'alice', password: 'secret', retries: 1}
+      options = {no_redirect: false, max_redirects: 3, username: 'alice', password: 'secret', retries: 1}
       HTTP.get(uri, {}, {}, options)
-      _(options).must_equal({no_redirect: false, username: 'alice', password: 'secret', retries: 1})
+      _(options).must_equal({no_redirect: false, max_redirects: 3, username: 'alice', password: 'secret', retries: 1})
     end
 
     it "keeps no_redirect for a second call" do
@@ -213,6 +213,44 @@ describe "redirect behaviour" do
           _(HTTP.request_without_body(:propfind, uri).code).must_equal('207')
         end
       end
+    end
+  end
+
+  describe "max_redirects" do
+    before do
+      stub_request(:get, 'http://example.com/0').to_return(status: 302, headers: {'location' => '/1'})
+      stub_request(:get, 'http://example.com/1').to_return(status: 302, headers: {'location' => '/2'})
+      stub_request(:get, 'http://example.com/2').to_return(status: 200)
+    end
+
+    it "follows as many redirects as it is allowed" do
+      _(HTTP.get('http://example.com/0', {}, {}, {max_redirects: 2}).success?).must_equal(true)
+    end
+
+    it "raises TooManyRedirects, with the redirect not followed, when there are more" do
+      error = _(->{HTTP.get('http://example.com/0', {}, {}, {max_redirects: 1})}).must_raise(HTTP::TooManyRedirects)
+      _(error.response['location']).must_equal('/2')
+      assert_not_requested(:get, 'http://example.com/2')
+    end
+
+    it "raises at the first redirect when it is 0" do
+      _(->{HTTP.get('http://example.com/0', {}, {}, {max_redirects: 0})}).must_raise(HTTP::TooManyRedirects)
+      assert_not_requested(:get, 'http://example.com/1')
+    end
+
+    it "gives way to no_redirect" do
+      _(HTTP.get('http://example.com/0', {}, {}, {max_redirects: 0, no_redirect: true}).code).must_equal('302')
+    end
+
+    it "stops a redirect loop at the default" do
+      stub_request(:get, uri).to_return(status: 302, headers: {'location' => uri})
+      _(->{HTTP.get(uri)}).must_raise(HTTP::TooManyRedirects)
+      assert_requested(:get, uri, times: HTTP::REDIRECT::MAX + 1)
+    end
+
+    it "is not passed through to Net::HTTP" do
+      stub_request(:get, uri).to_return(status: 200)
+      _(HTTP.get(uri, {}, {}, {max_redirects: 5}).success?).must_equal(true)
     end
   end
 end
