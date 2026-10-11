@@ -7,6 +7,23 @@ describe "redirect behaviour" do
   let(:same_origin_uri){'http://example.com/elsewhere'}
   let(:other_origin_uri){'http://redirected.com/path'}
 
+  describe "headers" do
+    %w{301 302 303 307 308}.each do |code|
+      it "are carried through a #{code}" do
+        stub_request(:get, uri).to_return(status: code.to_i, headers: {'location' => other_origin_uri})
+        stub_request(:get, other_origin_uri).with(headers: {'User-Agent' => 'Redback', 'Accept' => 'text/html'}).to_return(status: 200)
+        _(HTTP.get(uri, {}, {'User-Agent' => 'Redback', 'Accept' => 'text/html'}).success?).must_equal(true)
+      end
+    end
+
+    it "leave Content-Type behind when a POST becomes a GET" do
+      stub_request(:post, uri).to_return(status: 303, headers: {'location' => same_origin_uri})
+      stub_request(:get, same_origin_uri).to_return(status: 200)
+      HTTP.post(uri, {a: 1}, {'Content-Type' => 'application/json', 'User-Agent' => 'Redback'})
+      assert_requested(:get, same_origin_uri){|request| !request.headers.key?('Content-Type') && request.headers['User-Agent'] == 'Redback'}
+    end
+  end
+
   describe "credentials" do
     it "are kept for the same origin" do
       stub_request(:get, uri).to_return(status: 307, headers: {'location' => same_origin_uri})
@@ -14,7 +31,7 @@ describe "redirect behaviour" do
       _(HTTP.get(uri, {}, {'Authorization' => 'Bearer x', 'Cookie' => 'session=1'}).success?).must_equal(true)
     end
 
-    %w{307 308}.each do |code|
+    %w{301 302 303 307 308}.each do |code|
       it "are dropped for another origin via #{code}" do
         stub_request(:get, uri).to_return(status: code.to_i, headers: {'location' => other_origin_uri})
         stub_request(:get, other_origin_uri).to_return(status: 200)

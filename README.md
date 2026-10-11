@@ -93,6 +93,10 @@ HTTP.get('http://alice:secret@example.com')
 
 When both are supplied, the options hash wins.
 
+### Redirections
+
+Redirects are followed with the headers they were given, except that `Authorization` and `Cookie`, and the `username:` and `password:` options, go no further than the origin (scheme, host, and port) they were given to. Where a redirect makes the request a GET, `Content-Type` is left behind, there being no body for it to describe.
+
 ### Preventing redirections
 
 ```ruby

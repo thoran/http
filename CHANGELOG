@@ -2,6 +2,19 @@
 
 ## 20261011
 
+1.3.8: Headers are carried through a 301, 302, or 303.
+
+A 301, 302, or 303 was followed with no headers at all, so a User-Agent, an Accept, or a Cookie given to the request was not sent to where it was redirected, whereas a 307 or 308 sent them all. Now every redirect carries them, less the credentials which 1.3.6 keeps to their origin, and less Content-Type where the request is made a GET, there being no body for it to describe.
+
+1. ~ HTTP.redirect_headers: + drop_content_type:, which leaves Content-Type behind.
+2. ~ HTTP.request: a 301, 302, or 303 is followed with redirect_headers, dropping Content-Type, rather than with no headers.
+3. ~ test/HTTP/REDIRECT_test.rb: + headers carried through each of 301, 302, 303, 307, and 308, and Content-Type left behind when a POST becomes a GET; credentials dropped for another origin by 301, 302, and 303 as well as by 307 and 308. The 301, 302, and 303 examples fail against 1.3.7.
+4. ~ README.md: + Redirections, on what is carried through a redirect and what is not.
+5. ~ HTTP::VERSION: /1.3.7/1.3.8/
+
+
+## 20261011
+
 1.3.7: The options hash is no longer altered, so no_redirect, retries, and basic authentication survive a call and a redirect.
 
 HTTP.request took no_redirect, username, password, and the retry options out of the caller's hash with delete. A hash passed twice had lost no_redirect by the second call, which then followed the redirect it was asked not to. And the redirect was made with what was left of the hash, so retries and basic authentication were lost at the first redirect, even to the same origin.

@@ -12,9 +12,12 @@ module HTTP
   module_function :same_origin?
 
   # Credentials are for the origin they were given to, so they go no further than it.
-  def redirect_headers(headers, from_uri, to_uri)
-    return headers if same_origin?(from_uri, to_uri)
-    headers.reject{|k, v| REDIRECT::CREDENTIAL_HEADERS.include?(k.downcase)}
+  # A request made into a GET has no body for a Content-Type to describe.
+  def redirect_headers(headers, from_uri, to_uri, drop_content_type: false)
+    headers.reject do |k, v|
+      (drop_content_type && k.downcase == 'content-type') ||
+        (!same_origin?(from_uri, to_uri) && REDIRECT::CREDENTIAL_HEADERS.include?(k.downcase))
+    end
   end
   module_function :redirect_headers
 

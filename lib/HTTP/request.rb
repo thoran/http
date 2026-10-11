@@ -52,7 +52,7 @@ module HTTP
         data = METHODS::WITH_BODY.include?(request_method) ? request_object.body : {}
         response = send(request_method, redirect_uri.to_s, data, redirect_headers(headers, uri, redirect_uri), onward_options, &block)
       else
-        response = get(redirect_uri.to_s, {}, {}, onward_options, &block)
+        response = get(redirect_uri.to_s, {}, redirect_headers(headers, uri, redirect_uri, drop_content_type: true), onward_options, &block)
       end
     end
     if block_given?
