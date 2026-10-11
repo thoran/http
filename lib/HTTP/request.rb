@@ -40,7 +40,7 @@ module HTTP
         http.request(request_object)
       end
     )
-    if response.code =~ /^3/
+    if redirect?(response)
       if block_given? && no_redirect
         yield response
       elsif no_redirect

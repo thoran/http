@@ -96,4 +96,19 @@ describe "redirect behaviour" do
       assert_requested(:get, other_origin_uri){|request| !request.headers.key?('Authorization')}
     end
   end
+
+  describe "3xx responses which are not followed" do
+    %w{300 304}.each do |code|
+      it "return a #{code} as it is" do
+        stub_request(:get, uri).to_return(status: code.to_i, headers: {'location' => other_origin_uri})
+        _(HTTP.get(uri).code).must_equal(code)
+        assert_not_requested(:get, other_origin_uri)
+      end
+    end
+
+    it "return a redirect without a Location as it is" do
+      stub_request(:get, uri).to_return(status: 302)
+      _(HTTP.get(uri).code).must_equal('302')
+    end
+  end
 end

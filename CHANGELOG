@@ -2,6 +2,19 @@
 
 ## 20261011
 
+1.3.9: Only a 301, 302, 303, 307, or 308 with a Location is followed.
+
+Any 3xx was taken for a redirect. A 304 Not Modified carries no Location, so URI#merge was handed nil and raised ArgumentError, as did any 3xx without one. And a 300 Multiple Choices was followed to whatever its Location named, though it is a list of choices for the caller, the Location being only the server's preference among them. These are answers rather than redirects, and are now returned as they are.
+
+1. ~ lib/HTTP/REDIRECT.rb: + HTTP::REDIRECT::CODES (301, 302, 303, 307, 308); + HTTP.redirect?, which is true of a response with one of those codes and a Location.
+2. ~ HTTP.request: follows what redirect? is true of, rather than whatever begins with a 3.
+3. ~ test/HTTP/REDIRECT_test.rb: + 300 and 304 returned as they are, as is a 302 without a Location. All three fail against 1.3.8: the 300 and the 304 were followed, and the 302 raised.
+4. ~ README.md: + which responses are followed, under Redirections.
+5. ~ HTTP::VERSION: /1.3.8/1.3.9/
+
+
+## 20261011
+
 1.3.8: Headers are carried through a 301, 302, or 303.
 
 A 301, 302, or 303 was followed with no headers at all, so a User-Agent, an Accept, or a Cookie given to the request was not sent to where it was redirected, whereas a 307 or 308 sent them all. Now every redirect carries them, less the credentials which 1.3.6 keeps to their origin, and less Content-Type where the request is made a GET, there being no body for it to describe.

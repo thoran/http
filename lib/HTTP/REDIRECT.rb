@@ -3,8 +3,16 @@
 
 module HTTP
   module REDIRECT
+    CODES = %w{301 302 303 307 308}.freeze
     CREDENTIAL_HEADERS = %w{authorization cookie}.freeze
   end
+
+  # A 300 or a 304 is an answer rather than somewhere else to go, and a 3xx without a
+  # Location has nowhere to send it.
+  def redirect?(response)
+    REDIRECT::CODES.include?(response.code) && !response['location'].to_s.empty?
+  end
+  module_function :redirect?
 
   def same_origin?(a, b)
     [a.scheme, a.host, a.port] == [b.scheme, b.host, b.port]
