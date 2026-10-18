@@ -3,16 +3,19 @@
 lib_dir = File.expand_path(File.join(__FILE__, '..', '..', 'lib'))
 $LOAD_PATH.unshift(lib_dir) unless $LOAD_PATH.include?(lib_dir)
 
-# Skip webmock's http_rb adapter: it auto-requires 'http', which collides
-# with this gem's lib/HTTP.rb on case-insensitive filesystems and crashes
-# while trying to monkey-patch the wrong HTTP module.
+# webmock's http_rb adapter's require 'http' finds this gem's lib/http.rb,
+# takes HTTP::VERSION for the http gem's, and crashes trying to
+# monkey-patch an HTTP::Client which isn't there.
+def skip_webmocks_http_rb_adapter
+  gem 'webmock'
 
-gem 'webmock'
+  $LOADED_FEATURES << File.join(
+    Gem.loaded_specs['webmock'].full_gem_path,
+    'lib/webmock/http_lib_adapters/http_rb_adapter.rb'
+  )
+end
 
-$LOADED_FEATURES << File.join(
-  Gem.loaded_specs['webmock'].full_gem_path,
-  'lib/webmock/http_lib_adapters/http_rb_adapter.rb'
-)
+skip_webmocks_http_rb_adapter
 
 require 'minitest/autorun'
 require 'minitest/mock'

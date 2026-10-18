@@ -1,4 +1,14 @@
-# CHANGELOG
+# http/CHANGELOG
+
+## 20261018
+
+1.7.0: lib/HTTP.rb --> lib/http.rb
+
+1. lib/HTTP.rb --> lib/http.rb, so that it resolves the same on case-sensitive filesystems.
+2. + test/loading_test.rb: lib/ carries http.rb, and require 'http.rb' in a fresh process defines HTTP and HTTP::VERSION.
+3. ~ test/helper.rb: + skip_webmocks_http_rb_adapter()
+4. ~ HTTP::VERSION: /1.6.0/1.7.0/
+
 
 ## 20261011
 

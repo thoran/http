@@ -1,4 +1,4 @@
-# HTTP.rb
+# http.rb
 # HTTP
 
 require 'HTTP/METHODS'
