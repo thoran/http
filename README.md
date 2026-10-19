@@ -41,6 +41,14 @@ HTTP.get('http://example.com')
 HTTP.get('http://example.com', {a: 1, b: 2})
 HTTP.post('http://example.com', {a: 1, b: 2})
 ```
+
+For a method without a body, the args are joined to any query the URI already has, and an array repeats its key:
+
+```ruby
+HTTP.get('http://example.com/search?q=ruby', {tags: [1, 2]})
+# GET /search?q=ruby&tags=1&tags=2
+```
+
 ### With JSON data
 
 ```ruby

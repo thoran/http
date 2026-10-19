@@ -1,5 +1,18 @@
 # http/CHANGELOG
 
+## 20261019
+
+1.7.1: Args are joined to a query already in the URI with an ampersand, and an array among them repeats its key.
+
+1. ~ HTTP.request_without_body: the args are joined to the URI's query with '&' where it has one. '?' was added regardless, so HTTP.get('http://example.com/p?x=1', {a: 1}) requested '/p?x=1?a=1'.
+2. ~ Thoran::Hash::XWwwFormUrlencode#x_www_form_urlencode: an array value gives a pair for each element, a nil element left out, so {tags: [1, 2]} is 'tags=1&tags=2', as URI.encode_www_form and Net::HTTP#form_data= have it, rather than 'tags=%5B1%2C+2%5D'.
+3. ~ Thoran/Hash/XWwwFormUrlencode/x_www_form_urlencode.rb: /0.3.0/0.3.1/ in the file's own header.
+4. ~ test/HTTP/request_without_body_test.rb: + args with a query in the URI, and an array among the args, through request_without_body and HTTP.get. All fail against 1.7.0.
+5. + test/Thoran/Hash/XWwwFormUrlencode/x_www_form_urlencode_test.rb: pairs, nil values, arrays, an empty array, a nil element, agreement with URI.encode_www_form, the joiner, and the x_www_form_url_encode alias. The array examples fail against 1.7.0.
+6. ~ README.md: + how args meet a query in the URI and an array, under With arguments only.
+7. ~ HTTP::VERSION: /1.7.0/1.7.1/
+
+
 ## 20261018
 
 1.7.0: lib/HTTP.rb --> lib/http.rb
